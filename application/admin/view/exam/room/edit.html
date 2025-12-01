@@ -1,0 +1,112 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-name" data-rule="required" class="form-control" name="row[name]" type="text" value="{$row.name|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Contents')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-contents" data-rule="required" class="form-control" name="row[contents]" type="text" value="{$row.contents|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Cate_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-cate_id" data-rule="required" data-source="exam/cate/selectpage" data-params='{"custom[kind]":"ROOM","isTree":true}' class="form-control selectpage" name="row[cate_id]" type="text" value="{$row.cate_id|htmlentities}" disabled>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Paper_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-paper_id" data-rule="required" data-source="exam/paper/index" data-params='{"custom[status]":"NORMAL"}' data-field="title" class="form-control selectpage" name="row[paper_id]" type="text" value="{$row.paper_id|htmlentities}" disabled>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('People_count')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-people_count" data-rule="required" min="0" class="form-control" name="row[people_count]" type="number" value="{$row.people_count|htmlentities}" placeholder="0不限制人数">
+            <p style="color: #aaa">注：限制考场人数填0时为不限制人数</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Start_time')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-start_time" data-rule="required;match(lte, row[end_time], date);" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[start_time]" type="text" value="{:$row.start_time?datetime($row.start_time):''}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('End_time')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-end_time" data-rule="required;match(gte, row[start_time], date);" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[end_time]" type="text" value="{:$row.end_time?datetime($row.end_time):''}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Weigh')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-weigh" data-rule="required" class="form-control" name="row[weigh]" type="number" value="{$row.weigh|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+
+            <div class="radio">
+            {foreach name="statusList" item="vo"}
+            <label for="row[status]-{$key|htmlentities}"><input id="row[status]-{$key|htmlentities}" name="row[status]" type="radio" value="{$key|htmlentities}" {in name="key" value="$row.status"}checked{/in} /> {$vo|htmlentities}</label>
+            {/foreach}
+            </div>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Signup_mode')}:</label>
+        <div class="col-xs-12 col-sm-8">
+
+            <div class="radio">
+                {foreach name="signupModeList" item="vo"}
+                <label for="row[signup_mode]-{$key|htmlentities}">
+                    <input id="row[signup_mode]-{$key|htmlentities}" name="row[signup_mode]" type="radio" value="{$key|htmlentities}" {in name="key" value="$row.signup_mode" }checked{/in} /> {$vo|htmlentities}
+                </label>
+                {/foreach}
+            </div>
+
+        </div>
+    </div>
+    <div class="form-group password">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Password')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-password" class="form-control" name="row[password]" type="text" value="{$row.password|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Is_makeup')}:</label>
+        <div class="col-xs-12 col-sm-8">
+
+            <div class="radio">
+                {foreach name="isMakeupList" item="vo"}
+                <label for="row[is_makeup]-{$key|htmlentities}">
+                    <input id="row[is_makeup]-{$key|htmlentities}" name="row[is_makeup]" type="radio" value="{$key|htmlentities}" {in name="key" value="$row.is_makeup" }checked{/in} /> {$vo|htmlentities}
+                </label>
+                {/foreach}
+            </div>
+
+        </div>
+    </div>
+    <div class="form-group makeup_count">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Makeup_count')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-makeup_count" class="form-control" name="row[makeup_count]" type="number" value="{$row.makeup_count|htmlentities}" min="0">
+            <p style="color: #aaa">注：开启补考模式，补考次数最低为1</p>
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,93 @@
+
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">分享标题:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-share_title" data-rule="required" class="form-control" name="row[share_title]"
+                   type="text" value="{$row['share_title']|default=''}">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('轮播图')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input id="c-banner" class="form-control" size="50" name="row[banner]"
+                       value="{$row['banner']|default=''}"
+                       type="text">
+                <div class="input-group-addon no-border no-padding">
+                    <span>
+                        <button type="button" id="plupload-banner" class="btn btn-danger plupload" data-input-id="c-banner" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp" data-multiple="true" data-preview-id="p-banner">
+                            <i class="fa fa-upload"></i> {:__('Upload')}
+                        </button>
+                    </span>
+                    <span>
+                        <button type="button" id="fachoose-banner" class="btn btn-primary fachoose" data-input-id="c-banner" data-mimetype="image/*" data-multiple="true">
+                            <i class="fa fa-list"></i> {:__('Choose')}
+                        </button>
+                    </span>
+                </div>
+                <span class="msg-box n-right" for="c-banner"></span>
+            </div>
+            <ul class="row list-inline plupload-preview" id="p-banner"></ul>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">开启用户账号注册:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="radio">
+                <label for="row[open_user_register]-1">
+                    <input id="row[open_user_register]-1" name="row[open_user_register]" type="radio" value="1" {if condition="!isset($row['open_user_register']) || $row['open_user_register'] == 1" }checked{/if}/>
+                    开启
+                </label>
+                <label for="row[open_user_register]-0">
+                    <input id="row[open_user_register]-0" name="row[open_user_register]" type="radio" value="0" {if condition="isset($row['open_user_register']) && $row['open_user_register'] == 0" }checked{/if}/>
+                    关闭
+                </label>
+            </div>
+
+            <!--<p class="info-text">* 仅微信小程序生效</p>-->
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">登录时绑定手机号:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="radio">
+                <label for="row[bind_mobile]-1">
+                    <input id="row[bind_mobile]-1" name="row[bind_mobile]" type="radio" value="1" {notempty name="$row.bind_mobile" }{eq name="$row.bind_mobile" value="1" }checked{/eq}{else/}checked{/notempty}/>
+                    可选绑定
+                </label>
+                <label for="row[bind_mobile]-2">
+                    <input id="row[bind_mobile]-2" name="row[bind_mobile]" type="radio" value="2" {notempty name="$row.bind_mobile" }{eq name="$row.bind_mobile" value="2" }checked{/eq}{else/}checked{/notempty}/>
+                    强制绑定
+                </label>
+                <label for="row[bind_mobile]-0">
+                    <input id="row[bind_mobile]-0" name="row[bind_mobile]" type="radio" value="0" {notempty name="$row.bind_mobile" }{eq name="$row.bind_mobile" value="0" }checked{/eq}{else/}checked{/notempty}/>
+                    不绑定
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!--<div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">记录用户答题记录:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-record_exam_open" name="row[record_exam_open]" type="hidden" value="{$row.record_exam_open|default=0}">
+            <a href="javascript:;" data-toggle="switcher" class="btn-record_exam_open" data-input-id="c-record_exam_open" data-yes="1" data-no="0" >
+                <i class="fa fa-toggle-on text-success {if condition="!isset($row['record_exam_open']) || !$row['record_exam_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+            </a>
+            <p class="info-text">* 记录用户每次考试的答题内容</p>
+        </div>
+    </div>-->
+
+    <input type="hidden" name="type" value="system">
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

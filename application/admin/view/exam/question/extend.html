@@ -1,0 +1,380 @@
+<script>
+    var valid_result = false
+    {notempty name="row"}
+    var row = {:json_encode($row, 256)};
+    {else/}
+    var row = {};
+    {/notempty}
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            title: '',
+            kind: 'SINGLE',
+            // 填空题
+            fillOptions: [],
+            showTitleEditor: true,
+            showTitleFill: true,
+            // 简答题
+            shortOptions: [],
+            // 简答题分数设置
+            shortScoreDialogVisible: false,
+            shortScoreConfig: [],
+            shortScoreIndex: 0,
+            // 材料题
+            materialQuestions: [],
+            materialSummary: {
+                // 总分数及题数
+                total_score: 0,
+                total_quantity: 0,
+                // 各类题目的分数及题数
+                judge_quantity: 0,
+                judge_score: 0,
+                single_quantity: 0,
+                single_score: 0,
+                multi_quantity: 0,
+                multi_score: 0,
+                fill_quantity: 0,
+                fill_score: 0,
+                short_quantity: 0,
+                short_score: 0,
+            },
+            // 是否属于材料题的子题
+            isMaterialChild: 0,
+        },
+        created() {
+            // 编辑时初始化数据
+            if (row) {
+                this.title = row.title
+                this.kind = row.kind
+                this.isMaterialChild = row.is_material_child
+                this.hideMaterial()
+                // this.changeIsMaterialChild({target: {value: row.is_material_child}})
+
+                console.log('row.answer', row.answer)
+                switch (row.kind) {
+                    // 填空题
+                    case 'FILL':
+                        this.fillOptions = JSON.parse(row.answer)
+                        console.log('fillOptions', this.fillOptions)
+                        break
+
+                    // 简答题
+                    case 'SHORT':
+                        let shortAnswer = JSON.parse(row.answer)
+                        this.shortOptions = shortAnswer.config
+                        $('#c-short_answer').html(shortAnswer.answer)
+                        console.log('shortOptions', this.shortOptions)
+                        break
+
+                    // 材料题
+                    case 'MATERIAL':
+                        let material_questions = row.material_questions ? row.material_questions : []
+                        for (let i = 0; i < material_questions.length; i++) {
+                            if (material_questions[i].question) {
+                                material_questions[i].id = material_questions[i].question.id
+                                material_questions[i].kind = material_questions[i].question.kind
+                                material_questions[i].title = material_questions[i].question.title
+                                material_questions[i].cates = material_questions[i].question.cates
+                            }
+                        }
+                        this.materialQuestions = material_questions
+                        this.statisticsMaterialSummary()
+                        console.log('materialQuestions', this.materialQuestions)
+                        break
+
+                    default:
+                        break
+                }
+
+                this.hideTitle(row.kind)
+            } else {
+              // $('#c-title2').hide()
+              this.showTitleFill = false
+            }
+        },
+        methods: {
+            // 修改是否属于材料题的子题
+            changeIsMaterialChild(e) {
+                console.log('changeKind', e.target.value)
+                this.isMaterialChild = e.target.value
+                this.hideMaterial()
+            },
+            // 修改题型
+            changeKind(e) {
+                console.log('changeKind', e.target.value)
+                this.kind = e.target.value
+                this.hideMaterial()
+                this.hideTitle(this.kind)
+            },
+            // 隐藏材料题子题相关的内容
+            hideMaterial() {
+                if (this.isMaterialChild == 1) {
+                    $('label[for="row[kind]-MATERIAL"]').hide()
+                    $('.is_material_child').show()
+                } else {
+                    $('label[for="row[kind]-MATERIAL"]').show()
+                    $('.is_material_child').hide()
+                }
+
+                if (this.kind == 'MATERIAL') {
+                    $('#is_material_child').hide()
+                } else {
+                    $('#is_material_child').show()
+                }
+            },
+            // 隐藏题目
+            hideTitle(kind) {
+              if (kind == 'FILL') {
+                this.showTitleEditor = false
+                this.showTitleFill = true
+                $('#c-title1').hide()
+                $('#c-title2').show()
+              } else {
+                this.showTitleEditor = true
+                this.showTitleFill = false
+                $('#c-title1').show()
+                $('#c-title2').hide()
+              }
+
+              console.log('hideTitle', kind, this.showTitleEditor, this.showTitleFill)
+            },
+            // 填空题 - 插入填空位
+            addFillOptions() {
+                this.fillOptions.push({
+                    answers: [''],
+                })
+
+                this.title = this.title == undefined ? '' : this.title
+                this.title += '______'// 6个_
+            },
+            // 填空题 - 填空位添加答案
+            addFillAnswer(index) {
+                this.fillOptions[index].answers.push('')
+            },
+            // 填空题 - 填空位删除答案
+            deleteFillAnswer(index, key) {
+                if (this.fillOptions[index].answers.length === 1) {
+                    this.fillOptions.splice(index, 1)
+                } else {
+                    this.fillOptions[index].answers.splice(key, 1)
+                }
+            },
+            // 修改题目
+            changeTitle(e) {
+                console.log('changeTitle e', e, this.title)
+            },
+
+            // 简答题 - 插入答案
+            addShortOptions() {
+              this.shortOptions.push({
+                answer: '',
+                score: 1,
+              })
+            },
+            // 简答题 - 删除答案
+            deleteShortAnswer(index) {
+              this.shortOptions.splice(index, 1)
+            },
+
+            // 材料题 - 选择题目
+            selectMaterialQuestion() {
+                Fast.api.open('exam/question/select?kind=JUDGE,SINGLE,MULTI,FILL,SHORT', '选择题目', {
+                    callback: (data) => {
+                        console.log('selectMaterialQuestions', data)
+                        for (let i = 0; i < data.length; i++) {
+                            // 材料题不允许选择材料题
+                            if (data[i].kind == 'MATERIAL') {
+                                data.splice(i, 1)
+                                continue;
+                            }
+                            data[i].score = 1
+                        }
+
+                        // 排除已经存在的试题
+                        for (let i = 0; i < this.materialQuestions.length; i++) {
+                            for (let j = 0; j < data.length; j++) {
+                                if (this.materialQuestions[i].id == data[j].id) {
+                                    data.splice(j, 1)
+                                }
+                            }
+                        }
+
+                        // 合并数组
+                        this.materialQuestions = this.materialQuestions.concat(data)
+                        // 统计题目信息
+                        this.statisticsMaterialSummary()
+                    }
+                })
+            },
+            // 材料题 - 修改分数
+            scoreChange(index) {
+                console.log('scoreChange', index)
+                // 统计题目信息
+                this.statisticsMaterialSummary()
+            },
+            // 材料题 - 打开简答题关键词分数设置
+            openShortScoreDialog(row, index) {
+                let answer = row.answer
+                if (typeof answer == 'string') {
+                    answer = JSON.parse(answer)
+                }
+                console.log('openShortScoreDialog', row, index, answer)
+                this.shortScoreConfig = [...answer.config]
+                this.shortScoreIndex = index
+                this.shortScoreDialogVisible = true
+            },
+            // 材料题 - 提交简答题关键词分数设置
+            shortScoreSubmit() {
+                console.log('shortScoreSubmit', this.shortScoreConfig, this.materialQuestions[this.shortScoreIndex])
+                let answer = this.materialQuestions[this.shortScoreIndex].answer
+                if (typeof answer == 'string') {
+                    answer = JSON.parse(answer)
+                }
+                answer.config = this.shortScoreConfig
+                this.materialQuestions[this.shortScoreIndex].answer = answer
+
+                this.shortScoreConfig = null
+                this.shortScoreIndex = 0
+                this.shortScoreDialogVisible = false
+
+                // 统计题目信息
+                this.statisticsMaterialSummary()
+            },
+            // 材料题 - 删除试题
+            deleteQuestion(index) {
+                console.log('deleteQuestion', index)
+                this.materialQuestions.splice(index, 1)
+                // 统计题目信息
+                this.statisticsMaterialSummary()
+            },
+            // 材料题 - 统计材料题的分数及题数
+            statisticsMaterialSummary() {
+                let summary = {
+                    // 总分数及题数
+                    total_score: 0,
+                    total_quantity: 0,
+                    // 各类题目的分数及题数
+                    judge_quantity: 0,
+                    judge_score: 0,
+                    single_quantity: 0,
+                    single_score: 0,
+                    multi_quantity: 0,
+                    multi_score: 0,
+                    fill_quantity: 0,
+                    fill_score: 0,
+                    short_quantity: 0,
+                    short_score: 0,
+                }
+
+                for (let i = 0; i < this.materialQuestions.length; i++) {
+                    let question = this.materialQuestions[i]
+                    summary.total_score += question.score ? question.score : 1
+                    summary.total_quantity += 1
+
+                    switch (question.kind) {
+                        case 'JUDGE':
+                            summary.judge_quantity += 1
+                            summary.judge_score += question.score ? question.score : 1
+                            break
+                        case 'SINGLE':
+                            summary.single_quantity += 1
+                            summary.single_score += question.score ? question.score : 1
+                            break
+                        case 'MULTI':
+                            summary.multi_quantity += 1
+                            summary.multi_score += question.score ? question.score : 1
+                            break
+                        case 'FILL':
+                            summary.fill_quantity += 1
+                            summary.fill_score += question.score ? question.score : 1
+                            break
+                        case 'SHORT':
+                            summary.short_quantity += 1
+                            summary.short_score += question.score ? question.score : 1
+                            break
+                    }
+                }
+
+                this.materialSummary = summary
+            },
+
+            // 验证
+            valid() {
+                console.log('trigger valid', this.kind)
+                switch (this.kind) {
+                    case 'FILL':
+                        console.log('this.fillOptions', this.fillOptions)
+                        for (let i = 0; i < this.fillOptions.length; i++) {
+                            let option = this.fillOptions[i]
+                            for (let j = 0; j < option.answers.length; j++) {
+                                let answer = option.answers[j]
+                                console.log('answer', answer)
+                                if (answer.length == 0) {
+                                    Fast.api.msg('填空位（' + (i + 1) + '）的第' + (j + 1) + '个答案不能为空')
+                                    console.log('填空位（' + (i + 1) + '）的第' + (j + 1) + '个答案不能为空')
+                                    valid_result = false
+                                    return false
+                                }
+                            }
+                        }
+
+                        // $('#options_extend').val(encodeURI(JSON.stringify(this.fillOptions)))
+                        valid_result = true
+                        return true
+
+                    // 材料题
+                    case 'MATERIAL':
+                        console.log('this.materialQuestions', this.materialQuestions)
+                        // if (this.materialQuestions.length == 0) {
+                        //     console.log('材料题的子题目不能为空')
+                        //     valid_result = false
+                        //     return false
+                        // }
+
+                        for (let i = 0; i < this.materialQuestions.length; i++) {
+                            let question = this.materialQuestions[i]
+                            if (question.kind == 'SHORT') {
+                                let answer = question.answer
+                                if (typeof answer == 'string') {
+                                    answer = JSON.parse(answer)
+                                }
+                                if (answer.config.length == 0) {
+                                    Fast.api.msg('简答题的关键词分数不能为空')
+                                    console.log('简答题的关键词分数不能为空')
+                                    valid_result = false
+                                    return false
+                                }
+                            }
+                        }
+
+                        // 将试题信息转换为JSON字符串
+                        let questions = []
+                        for (let i = 0; i < this.materialQuestions.length; i++) {
+                            let question = this.materialQuestions[i]
+                            questions.push({
+                                id: question.id,
+                                score: question.score,
+                                answer: question.answer,
+                                answer_config: question.answer_config ? question.answer_config : null,
+                            })
+                        }
+                        $('#c-material_questions').val(JSON.stringify(questions))
+
+                        valid_result = true
+                        return true
+
+                    default:
+                        valid_result = true
+                        return true
+
+                }
+            }
+        }
+    })
+</script>
+<style>
+    .sp_results {
+        min-width: 600px;
+    }
+</style>

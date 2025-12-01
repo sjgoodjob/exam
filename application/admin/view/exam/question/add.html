@@ -1,0 +1,250 @@
+<script src="__CDN__/assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="__CDN__/assets/addons/exam/js/vue.js"></script>
+<link rel="stylesheet" type="text/css" href="__CDN__/assets/addons/exam/css/common.css"></link>
+<script src="__CDN__/assets/addons/exam/js/element-ui/index.js"></script>
+<link rel="stylesheet" type="text/css" href="__CDN__/assets/addons/exam/js/element-ui/index.css"></link>
+
+<!--<script src="__CDN__/assets/addons/exam/element/index.js"></script>-->
+<!--<link rel="stylesheet" type="text/css" href="__CDN__/assets/addons/exam/element/index.css" />-->
+
+<div id="app">
+    <form id="question-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Cate_id')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="c-cate_id" data-rule="required" data-source="exam/cate/selectpage" data-params='{"custom[kind]":"QUESTION","isTree":true}' class="form-control selectpage" name="row[cate_id]" type="text" value="">
+            </div>
+        </div>
+        <!--<div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Exam_type_id')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="c-exam_type_id" data-rule="required" data-source="exam_type/index" class="form-control selectpage" name="row[exam_type_id]" type="text" value="">
+            </div>
+        </div>-->
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Title')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <div id="c-title1" v-show="showTitleEditor">
+                    <textarea id="c-title" class="form-control editor" name="row[title]"></textarea>
+                </div>
+                <input id="c-title2" class="form-control" name="row[title_fill]" type="text" @change="changeTitle" v-model:value="title" v-show="showTitleFill">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('title_video')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <div class="input-group">
+                    <input id="c-title_video" class="form-control" size="50" name="row[title_video]" type="text">
+                    <div class="input-group-addon no-border no-padding">
+                        <span><button type="button" id="plupload-title_video" class="btn btn-danger plupload" data-input-id="c-title_video" data-mimetype="mp4" data-multiple="false" data-preview-id="p-title_video"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                        <span><button type="button" id="fachoose-title_video" class="btn btn-primary fachoose" data-input-id="c-title_video" data-mimetype="mp4" data-multiple="false"><i class="fa fa-list"></i> {:__('Choose')}</button></span>
+                    </div>
+                    <span class="msg-box n-right" for="c-title_video"></span>
+                </div>
+                <ul class="row list-inline plupload-preview" id="p-title_video"></ul>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Kind')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <div class="radio">
+                    {foreach name="kindList" item="vo"}
+                    <label for="row[kind]-{$key|htmlentities}">
+                        <input @change="changeKind" id="row[kind]-{$key|htmlentities}" name="row[kind]" type="radio" value="{$key|htmlentities}" {in name="key" value="SINGLE" }checked{/in} /> {$vo|htmlentities}
+                    </label>
+                    {/foreach}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" id="is_material_child">
+            <label class="control-label col-xs-12 col-sm-2">{:__('is_material_child')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <div class="radio">
+                    <label for="row[is_material_child]-0">
+                        <input @change="changeIsMaterialChild" id="row[is_material_child]-0" name="row[is_material_child]" type="radio" value="0" checked /> 否
+                    </label>
+
+                    <label for="row[is_material_child]-1">
+                        <input @change="changeIsMaterialChild" id="row[is_material_child]-1" name="row[is_material_child]" type="radio" value="1" /> 是
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group is_material_child">
+            <label class="control-label col-xs-12 col-sm-2">{:__('material_question_id')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="c-material_question_id" data-source="exam/question/index" data-field="title" data-params='{"custom[kind]":"MATERIAL"}' class="form-control selectpage" name="row[material_question_id]" type="text" value="" style="width: 100%;">
+            </div>
+        </div>
+
+        <div class="form-group is_material_child">
+            <label class="control-label col-xs-12 col-sm-2">{:__('material_score')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="c-material_score" class="form-control" name="row[material_score]" type="number" value="0" step="1">
+            </div>
+        </div>
+
+        <!--原题型 -->
+        <div v-show="kind === 'JUDGE' || kind === 'SINGLE' || kind === 'MULTI'">
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-2">{:__('Options_json')}:</label>
+                <div class="col-xs-12 col-sm-8">
+
+                    <dl class="fieldlist" data-name="row[options_json]">
+                        <dd>
+                            <ins>{:__('Key')}</ins>
+                            <ins>{:__('Value')}</ins>
+                        </dd>
+                        <dd><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></dd>
+                        <textarea name="row[options_json]" class="form-control hide" cols="30" rows="5"></textarea>
+                    </dl>
+
+                    <textarea id="c-options_img" name="row[options_img]" class="form-control hide" cols="30" rows="5"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-2">{:__('Answer')}:</label>
+                <div class="col-xs-12 col-sm-8">
+                    <input id="c-answer" class="form-control" name="row[answer]" type="text" readonly="readonly">
+                </div>
+            </div>
+        </div>
+
+        <!--填空题-->
+        <div v-show="kind === 'FILL'">
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-2">填空位:</label>
+                <div class="col-xs-12 col-sm-8">
+                    <button type="button" class="btn btn-success" @click="addFillOptions()"><i class="fa fa-plus"></i> 新增填空位</button>
+
+                    <div v-for="(option, index) in fillOptions" :key="index">
+                        <p style="margin-left: 10px; margin-top: 10px;">填空位（{{(index + 1)}}）答案（任意答案匹配即算正确）</p>
+
+                        <div class="fill-option" v-for="(answer, key) in option.answers" :key="key">
+                            <div>
+                                <input type="text" class="form-control" :name="'row[answer]['+index+'][answers][]'" v-model="fillOptions[index].answers[key]" placeholder="请输入答案" />
+                            </div>
+                            <div class="m-l-10">
+                                <button type="button" class="btn btn-danger" @click="deleteFillAnswer(index, key)"><i class="fa fa-trash"></i> </button>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-info" @click="addFillAnswer(index)"><i class="fa fa-plus"></i> 新增答案项</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--简答题-->
+        <div v-show="kind === 'SHORT'">
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-2">标准答案:</label>
+                <div class="col-xs-12 col-sm-8">
+                    <textarea id="c-short_answer" class="form-control" name="row[short_answer]" rows="5"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-2">关键词:</label>
+                <div class="col-xs-12 col-sm-8">
+                    <button type="button" class="btn btn-success" @click="addShortOptions()"><i class="fa fa-plus"></i> 新增关键词</button>
+                    <p style="margin-left: 10px; margin-top: 10px;" class="text-info">任意关键词匹配得分数</p>
+
+                    <div v-for="(option, index) in shortOptions" :key="index" class="row m-t-5">
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" :name="'row[answer_config]['+index+'][answer]'" v-model="option.answer" placeholder="请输入关键词" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="m-t-5">得</label>
+                            <input type="number" step="1" min="1" class="form-control" :name="'row[answer_config]['+index+'][score]'" v-model="option.score" placeholder="请输入分数" style="width: 60px;"/>
+                            <label class="m-t-5">分</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="button" class="btn btn-danger" @click="deleteShortAnswer(index)"><i class="fa fa-trash"></i> </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--材料题-->
+        <div v-show="kind === 'MATERIAL'">
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-2">选择题目:</label>
+                <div class="col-xs-12 col-sm-8">
+                    <button class="btn btn-success" type="button" @click="selectMaterialQuestion()"><i class="fa fa-search"></i> 选择题目</button>
+
+                    <!--材料题子题目设置-->
+                    {include file="../application/admin/view/exam/question/material_questions.html" /}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Difficulty')}:</label>
+            <div class="col-xs-12 col-sm-8">
+
+                <select id="c-difficulty" data-rule="required" class="form-control selectpicker" name="row[difficulty]">
+                    {foreach name="difficultyList" item="vo"}
+                    <option value="{$key|htmlentities}" {in name="key" value="GENERAL"}selected{/in}>{$vo|htmlentities}</option>
+                    {/foreach}
+                </select>
+
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Explain')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <!--            <input id="c-explain" class="form-control" name="row[explain]" type="text">-->
+                <textarea id="c-explain" class="form-control editor" name="row[explain]"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('explain_video')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <div class="input-group">
+                    <input id="c-explain_video" class="form-control" size="50" name="row[explain_video]" type="text">
+                    <div class="input-group-addon no-border no-padding">
+                        <span><button type="button" id="plupload-explain_video" class="btn btn-danger plupload" data-input-id="c-explain_video" data-mimetype="mp4" data-multiple="false" data-preview-id="p-explain_video"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                        <span><button type="button" id="fachoose-explain_video" class="btn btn-primary fachoose" data-input-id="c-explain_video" data-mimetype="mp4" data-multiple="false"><i class="fa fa-list"></i> {:__('Choose')}</button></span>
+                    </div>
+                    <span class="msg-box n-right" for="c-explain_video"></span>
+                </div>
+              <ul class="row list-inline plupload-preview" id="p-explain_video"></ul>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
+            <div class="col-xs-12 col-sm-8">
+
+                <div class="radio">
+                    {foreach name="statusList" item="vo"}
+                    <label for="row[status]-{$key|htmlentities}"><input id="row[status]-{$key|htmlentities}" name="row[status]" type="radio" value="{$key|htmlentities}" {in name="key" value="NORMAL"}checked{/in} /> {$vo|htmlentities}</label>
+                    {/foreach}
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group layer-footer">
+            <label class="control-label col-xs-12 col-sm-2"></label>
+            <div class="col-xs-12 col-sm-8">
+                <input type="button" id="valid" @click="valid" class="hide">
+                <!--<input type="hidden" id="options_extend" name="row[options_extend]">-->
+
+                <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+                <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--试题设置扩展-->
+{include file="../application/admin/view/exam/question/extend.html" /}

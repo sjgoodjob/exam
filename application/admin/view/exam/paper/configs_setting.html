@@ -1,0 +1,329 @@
+<!--<div style="display: none; overflow: hidden;" id="configsDialog">
+    <form id="configs-form" class="form-horizontal m-tb-15" role="form" data-toggle="validator" method="POST" action="">-->
+<div class="panel panel-default">
+    <div class="panel-heading">出题规则</div>
+    <div class="panel-body">
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">选择题库:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="config-cate_id" data-source="exam/cate/selectpage"
+                       data-params='{"custom[kind]":"QUESTION","isTree": true}' data-multiple="true" class="form-control selectpage"
+                       name="configs[cate_id]" value="{$configs.cate_ids|default=''}">
+                <!--<input id="config-cate_id" data-source="exam/cate/getQuestionCate"
+                       data-params='{"custom[kind]":"QUESTION","isTree": true}' data-multiple="true" class="form-control selectpage"
+                       name="configs[cate_id]" value="{$configs.cate_ids|default=''}">-->
+            </div>
+        </div>
+
+        <div class="form-group p-tb-15 m-l-25">
+            <div class="col-xs-12 col-sm-12">
+
+                <div class="p-l-80 m-tb-10" id="divAll">
+                    共 <span class="span_total_total">0</span> 题
+                    ，选取 <span class="span_quantity">{$configs.all.quantity|default=0}</span> 题
+                    ，总分 <span class="span_total_score">{$configs.all.total_score|default=0}</span> 分
+                </div>
+
+                <div class="p-l-80 m-tb-10">
+                    <p>
+                        判断题： 共 <span class="span_judge_total">0</span> 题，
+                        选取 <input class="input_kind_count input_judge input_count w-60" data-type="judge" type="number"
+                                  step="1" min="0" max="0" value="{$configs.judge.count|default=0}"> 题，
+                        <span class="span_judge_score">每题 <input class="input_judge_score input_score w-60"
+                                                                 data-type="judge" type="number" step="1" min="0"
+                                                                 max="0"
+                                                                 value="{$configs.judge.score|default=0}"> 分，</span>
+                        总分 <span class="span_kind_total_score span_judge_total_score">{$configs.judge.total_score|default=0}</span>
+                        分
+                        <input type="checkbox" class="checkbox_difficulty checkbox_judge" data-type="judge"> 分难度
+                    </p>
+                    <ul class="ul_difficulty ul_judge_difficulty hide">
+                        <li>
+                            难度低，共 <span class="span_judge_easy_total">0</span> 题，
+                            选取 <input class="input_judge_easy input_count w-60" data-type="judge_easy" type="number"
+                                      step="1" min="0" max="0" value="{$configs.judge.difficulty.easy.count|default=0}">
+                            题，
+                            每题 <input class="input_judge_easy_score input_score w-60" data-type="judge_easy"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.judge.difficulty.easy.score|default=0}"> 分
+                            总分 <span class="span_judge_easy_total_score">0</span> 分
+                        </li>
+
+                        <li>
+                            难度中，共 <span class="span_judge_general_total">0</span> 题，
+                            选取 <input class="input_judge_general input_count w-60" data-type="judge_general"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.judge.difficulty.general.count|default=0}"> 题，
+                            每题 <input class="input_judge_general_score input_score w-60" data-type="judge_general"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.judge.difficulty.general.score|default=0}"> 分
+                            总分 <span class="span_judge_general_total_score">0</span> 分
+                        </li>
+
+                        <li>
+                            难度高，共 <span class="span_judge_hard_total">0</span> 题，
+                            选取 <input class="input_judge_hard input_count w-60" data-type="judge_hard" type="number"
+                                      step="1" min="0" max="0" value="{$configs.judge.difficulty.hard.count|default=0}">
+                            题，
+                            每题 <input class="input_judge_hard_score input_score w-60" data-type="judge_hard"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.judge.difficulty.hard.score|default=0}"> 分
+                            总分 <span class="span_judge_hard_total_score">0</span> 分
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="p-l-80 m-tb-10">
+                    <p>
+                        单选题： 共 <span class="span_single_total">0</span> 题，
+                        选取 <input class="input_kind_count input_single input_count w-60" data-type="single"
+                                  type="number" step="1" min="0" max="0" value="{$configs.single.count|default=0}"> 题，
+                        <span class="span_single_score">每题 <input class="input_single_score input_score w-60"
+                                                                  data-type="single" type="number" step="1" min="0"
+                                                                  max="0" value="{$configs.single.score|default=0}"> 分，</span>
+                        总分 <span class="span_kind_total_score span_single_total_score">0</span> 分
+                        <input type="checkbox" class="checkbox_difficulty checkbox_single" data-type="single"> 分难度
+                    </p>
+                    <ul class="ul_difficulty ul_single_difficulty hide">
+                        <li>
+                            难度低，共 <span class="span_single_easy_total">0</span> 题，
+                            选取 <input class="input_single_easy input_count w-60" data-type="single_easy" type="number"
+                                      step="1" min="0" max="0"
+                                      value="{$configs.single.difficulty.easy.count|default=0}"> 题，
+                            每题 <input class="input_single_easy_score input_score w-60" data-type="single_easy"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.single.difficulty.easy.score|default=0}"> 分
+                            总分 <span class="span_single_easy_total_score">0</span> 分
+                        </li>
+
+                        <li>
+                            难度中，共 <span class="span_single_general_total">0</span> 题，
+                            选取 <input class="input_single_general input_count w-60" data-type="single_general"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.single.difficulty.general.count|default=0}"> 题，
+                            每题 <input class="input_single_general_score input_score w-60" data-type="single_general"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.single.difficulty.general.score|default=0}"> 分
+                            总分 <span class="span_single_general_total_score">0</span> 分
+                        </li>
+
+                        <li>
+                            难度高，共 <span class="span_single_hard_total">0</span> 题，
+                            选取 <input class="input_single_hard input_count w-60" data-type="single_hard" type="number"
+                                      step="1" min="0" max="0"
+                                      value="{$configs.single.difficulty.hard.count|default=0}"> 题，
+                            每题 <input class="input_single_hard_score input_score w-60" data-type="single_hard"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.single.difficulty.hard.score|default=0}"> 分
+                            总分 <span class="span_single_hard_total_score">0</span> 分
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="p-l-80 m-tb-10">
+                    <p>
+                        多选题： 共 <span class="span_multi_total">0</span> 题，
+                        选取 <input class="input_kind_count input_multi input_count w-60" data-type="multi" type="number"
+                                  step="1" min="0" max="0" value="{$configs.multi.count|default=0}"> 题，
+                        <span class="span_multi_score">每题 <input class="input_multi_score input_score w-60"
+                                                                 data-type="multi" type="number" step="1" min="0"
+                                                                 max="0"
+                                                                 value="{$configs.multi.score|default=0}"> 分，</span>
+                        总分 <span class="span_kind_total_score span_multi_total_score">0</span> 分
+                        <input type="checkbox" class="checkbox_difficulty checkbox_multi" data-type="multi"> 分难度
+                    </p>
+                    <ul class="ul_difficulty ul_multi_difficulty hide">
+                        <li>
+                            难度低，共 <span class="span_multi_easy_total">0</span> 题，
+                            选取 <input class="input_multi_easy input_count w-60" data-type="multi_easy" type="number"
+                                      step="1" min="0" max="0" value="{$configs.multi.difficulty.easy.count|default=0}">
+                            题，
+                            每题 <input class="input_multi_easy_score input_score w-60" data-type="multi_easy"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.single.difficulty.easy.score|default=0}"> 分
+                            总分 <span class="span_multi_easy_total_score">0</span> 分
+                        </li>
+
+                        <li>
+                            难度中，共 <span class="span_multi_general_total">0</span> 题，
+                            选取 <input class="input_multi_general input_count w-60" data-type="multi_general"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.multi.difficulty.general.count|default=0}"> 题，
+                            每题 <input class="input_multi_general_score input_score w-60" data-type="multi_general"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.multi.difficulty.general.score|default=0}"> 分
+                            总分 <span class="span_multi_general_total_score">0</span> 分
+                        </li>
+
+                        <li>
+                            难度高，共 <span class="span_multi_hard_total">0</span> 题，
+                            选取 <input class="input_multi_hard input_count w-60" data-type="multi_hard" type="number"
+                                      step="1" min="0" max="0" value="{$configs.multi.difficulty.hard.count|default=0}">
+                            题，
+                            每题 <input class="input_multi_hard_score input_score w-60" data-type="multi_hard"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.multi.difficulty.hard.score|default=0}"> 分
+                            总分 <span class="span_multi_hard_total_score">0</span> 分
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="p-l-80 m-tb-10">
+                    <p>
+                        填空题： 共 <span class="span_fill_total">0</span> 题，
+                        选取 <input class="input_kind_count input_fill input_count w-60" data-type="fill" type="number"
+                                  step="1" min="0" max="0" value="{$configs.fill.count|default=0}"> 题，
+                        <span class="span_fill_score">每题 <input class="input_fill_score input_score w-60"
+                                                                 data-type="fill" type="number" step="1" min="0"
+                                                                 max="0"
+                                                                 value="{$configs.fill.score|default=0}"> 分，</span>
+                        总分 <span class="span_kind_total_score span_fill_total_score">0</span> 分
+                        <input type="checkbox" class="checkbox_difficulty checkbox_fill" data-type="fill"> 分难度
+                    </p>
+                    <ul class="ul_difficulty ul_fill_difficulty hide">
+                        <li>
+                            难度低，共 <span class="span_fill_easy_total">0</span> 题，
+                            选取 <input class="input_fill_easy input_count w-60" data-type="fill_easy" type="number"
+                                      step="1" min="0" max="0" value="{$configs.fill.difficulty.easy.count|default=0}">
+                            题，
+                            每题 <input class="input_fill_easy_score input_score w-60" data-type="fill_easy"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.single.difficulty.easy.score|default=0}"> 分
+                            总分 <span class="span_fill_easy_total_score">0</span> 分
+                        </li>
+
+                        <li>
+                            难度中，共 <span class="span_fill_general_total">0</span> 题，
+                            选取 <input class="input_fill_general input_count w-60" data-type="fill_general"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.fill.difficulty.general.count|default=0}"> 题，
+                            每题 <input class="input_fill_general_score input_score w-60" data-type="fill_general"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.fill.difficulty.general.score|default=0}"> 分
+                            总分 <span class="span_fill_general_total_score">0</span> 分
+                        </li>
+
+                        <li>
+                            难度高，共 <span class="span_fill_hard_total">0</span> 题，
+                            选取 <input class="input_fill_hard input_count w-60" data-type="fill_hard" type="number"
+                                      step="1" min="0" max="0" value="{$configs.fill.difficulty.hard.count|default=0}">
+                            题，
+                            每题 <input class="input_fill_hard_score input_score w-60" data-type="fill_hard"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.fill.difficulty.hard.score|default=0}"> 分
+                            总分 <span class="span_fill_hard_total_score">0</span> 分
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="p-l-80 m-tb-10">
+                    <p>
+                        简答题： 共 <span class="span_short_total">0</span> 题，
+                        选取 <input class="input_kind_count input_short input_count w-60" data-type="short" type="number"
+                                  step="1" min="0" max="0" value="{$configs.short.count|default=0}"> 题，
+                        <span class="span_short_score">每题 <input class="input_short_score input_score w-60"
+                                                                 data-type="short" type="number" step="1" min="0"
+                                                                 max="0"
+                                                                 value="{$configs.short.score|default=0}"> 分，</span>
+                        总分 <span class="span_kind_total_score span_short_total_score">0</span> 分
+                        <input type="checkbox" class="checkbox_difficulty checkbox_short" data-type="short"> 分难度
+                    </p>
+                    <ul class="ul_difficulty ul_short_difficulty hide">
+                        <li>
+                            难度低，共 <span class="span_short_easy_total">0</span> 题，
+                            选取 <input class="input_short_easy input_count w-60" data-type="short_easy" type="number"
+                                      step="1" min="0" max="0" value="{$configs.short.difficulty.easy.count|default=0}">
+                            题，
+                            每题 <input class="input_short_easy_score input_score w-60" data-type="short_easy"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.single.difficulty.easy.score|default=0}"> 分
+                            总分 <span class="span_short_easy_total_score">0</span> 分
+                        </li>
+
+                        <li>
+                            难度中，共 <span class="span_short_general_total">0</span> 题，
+                            选取 <input class="input_short_general input_count w-60" data-type="short_general"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.short.difficulty.general.count|default=0}"> 题，
+                            每题 <input class="input_short_general_score input_score w-60" data-type="short_general"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.short.difficulty.general.score|default=0}"> 分
+                            总分 <span class="span_short_general_total_score">0</span> 分
+                        </li>
+
+                        <li>
+                            难度高，共 <span class="span_short_hard_total">0</span> 题，
+                            选取 <input class="input_short_hard input_count w-60" data-type="short_hard" type="number"
+                                      step="1" min="0" max="0" value="{$configs.short.difficulty.hard.count|default=0}">
+                            题，
+                            每题 <input class="input_short_hard_score input_score w-60" data-type="short_hard"
+                                      type="number" step="1" min="0" max="0"
+                                      value="{$configs.short.difficulty.hard.score|default=0}"> 分
+                            总分 <span class="span_short_hard_total_score">0</span> 分
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="p-l-80 m-tb-10">
+                    <p>
+                        材料题： 共 <span class="span_material_total">0</span> 题，
+                        选取 <input class="input_kind_count input_material input_count w-60" data-type="material" type="number"
+                                    step="1" min="0" max="0" value="{$configs.material.count|default=0}"> 题，
+                        <span class="span_material_score">每题 <input class="input_material_score input_score w-60"
+                                                                   data-type="material" type="number" step="1" min="0"
+                                                                   max="0"
+                                                                   value="{$configs.material.score|default=0}"> 分，</span>
+                        总分 <span class="span_kind_total_score span_material_total_score">0</span> 分
+                        <input type="checkbox" class="checkbox_difficulty checkbox_material" data-type="material"> 分难度
+                    </p>
+                    <ul class="ul_difficulty ul_material_difficulty hide">
+                        <li>
+                            难度低，共 <span class="span_material_easy_total">0</span> 题，
+                            选取 <input class="input_material_easy input_count w-60" data-type="material_easy" type="number"
+                                        step="1" min="0" max="0" value="{$configs.material.difficulty.easy.count|default=0}">
+                            题，
+                            每题 <input class="input_material_easy_score input_score w-60" data-type="material_easy"
+                                        type="number" step="1" min="0" max="0"
+                                        value="{$configs.single.difficulty.easy.score|default=0}"> 分
+                            总分 <span class="span_material_easy_total_score">0</span> 分
+                        </li>
+
+                        <li>
+                            难度中，共 <span class="span_material_general_total">0</span> 题，
+                            选取 <input class="input_material_general input_count w-60" data-type="material_general"
+                                        type="number" step="1" min="0" max="0"
+                                        value="{$configs.material.difficulty.general.count|default=0}"> 题，
+                            每题 <input class="input_material_general_score input_score w-60" data-type="material_general"
+                                        type="number" step="1" min="0" max="0"
+                                        value="{$configs.material.difficulty.general.score|default=0}"> 分
+                            总分 <span class="span_material_general_total_score">0</span> 分
+                        </li>
+
+                        <li>
+                            难度高，共 <span class="span_material_hard_total">0</span> 题，
+                            选取 <input class="input_material_hard input_count w-60" data-type="material_hard" type="number"
+                                        step="1" min="0" max="0" value="{$configs.material.difficulty.hard.count|default=0}">
+                            题，
+                            每题 <input class="input_material_hard_score input_score w-60" data-type="material_hard"
+                                        type="number" step="1" min="0" max="0"
+                                        value="{$configs.material.difficulty.hard.score|default=0}"> 分
+                            总分 <span class="span_material_hard_total_score">0</span> 分
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group layer-footer">
+            <label class="control-label col-xs-12 col-sm-2"></label>
+            <div class="col-xs-12 col-sm-8">
+                <button type="button" class="btn btn-success btn-embossed" id="btnSaveConfig">保存设置</button>
+                <!--<button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>-->
+            </div>
+        </div>
+        <!--</form>
+    </div>-->
+    </div>
+</div>
+
+

@@ -1,0 +1,337 @@
+<script src="__CDN__/assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="__CDN__/assets/addons/exam/js/vue.js"></script>
+<link rel="stylesheet" type="text/css" href="__CDN__/assets/addons/exam/css/common.css"></link>
+
+<link rel="stylesheet" type="text/css" href="__CDN__/assets/addons/exam/js/element-ui/index.css"/>
+<script src="__CDN__/assets/addons/exam/js/element-ui/index.js"></script>
+
+<div id="app">
+    <el-card class="box-card" style="margin-bottom: 20px;">
+        <div slot="header" class="clearfix">
+            <span>考试用户信息</span>
+        </div>
+        <el-descriptions title="" :column="2" border>
+            <el-descriptions-item label="用户名">{{row.user.nickname}}</el-descriptions-item>
+            <el-descriptions-item label="手机号">{{row.user.mobile}}</el-descriptions-item>
+        </el-descriptions>
+    </el-card>
+
+    <el-card class="box-card" style="margin-bottom: 20px;">
+        <div slot="header" class="clearfix">
+            <span>考卷信息</span>
+        </div>
+        <el-descriptions title="" :column="3" border>
+            <el-descriptions-item label="考卷分类">{{row.cate.name}}</el-descriptions-item>
+            <el-descriptions-item label="考卷名称">{{row.paper.title}}</el-descriptions-item>
+            <el-descriptions-item label="出题模式">
+                <el-tag size="small" v-if="row.mode == 'RANDOM'">随机模式</el-tag>
+                <el-tag size="small" v-else-if="row.mode == 'FIX'" type="success">固定模式</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="题目数量">{{row.total_count}}题</el-descriptions-item>
+            <el-descriptions-item label="试卷总分">{{row.total_score}}分</el-descriptions-item>
+            <el-descriptions-item label="及格线">
+                <span style="font-weight: bold;">{{row.pass_score}}</span>分
+            </el-descriptions-item>
+            <el-descriptions-item label="考试限时">{{formatSecond(row.paper.limit_time)}}分</el-descriptions-item>
+        </el-descriptions>
+    </el-card>
+
+    <el-card class="box-card" style="margin-bottom: 20px;">
+        <div slot="header" class="clearfix">
+            <span>用户考试情况</span>
+            <!--<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+        </div>
+
+        <el-descriptions title="" :column="3" border style="margin-bottom: 30px;">
+            <el-descriptions-item label="考试分数">
+                <span style="margin-right: 10px;">{{row.score}}分</span>
+                <el-tag size="small" v-if="row.is_pass" type="success">及格</el-tag>
+                <el-tag size="small" v-else type="danger">不及格</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="答对数" content-class-name="answer-right">{{row.right_count}}题</el-descriptions-item>
+            <el-descriptions-item label="答错数" content-class-name="answer-fail">{{row.error_count}}题</el-descriptions-item>
+            <el-descriptions-item label="交卷时间">{{row.createtime_text}}</el-descriptions-item>
+            <el-descriptions-item label="考试用时">{{formatSecond(row.grade_time)}}</el-descriptions-item>
+        </el-descriptions>
+    </el-card>
+
+    <el-card class="box-card" style="margin-bottom: 20px;">
+        <div slot="header" class="clearfix">
+            <span>用户答题情况</span>
+            <!--<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+        </div>
+
+        <div v-for="(question, index) in row.questions" :key="index" class="question-item">
+            <div class="el-descriptions">
+                <div class="el-descriptions__body">
+                    <table class="el-descriptions__table is-bordered">
+                        <tbody>
+                            <tr class="el-descriptions-row">
+                                <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label th-fix-width ">标题</th>
+                                <td colspan="9" class="el-descriptions-item__cell el-descriptions-item__content">{{index+1}}.<span v-html="question.title"></span></td>
+                            </tr>
+                            <tr class="el-descriptions-row">
+                                <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label th-fix-width ">选项</th>
+                                <td colspan="9" class="el-descriptions-item__cell el-descriptions-item__content">
+                                    <div v-if="question.kind !== 'FILL'">
+                                        <div v-for="(option, indexOption) in question.options_json" :key="indexOption" class="option-item">
+                                            {{option.key}}：{{option.value}}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr class="el-descriptions-row">
+                                <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label th-fix-width">题型</th>
+                                <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content th-fix-width">
+                                    <el-tag size="small" effect="plain" v-if="question.kind == 'JUDGE'">判断题</el-tag>
+                                    <el-tag size="small" effect="plain" v-else-if="question.kind == 'SINGLE'" type="success">单选题</el-tag>
+                                    <el-tag size="small" effect="plain" v-else-if="question.kind == 'MULTI'" type="info">多选题</el-tag>
+                                    <el-tag size="small" effect="plain" v-else-if="question.kind == 'FILL'" type="warning">填空题</el-tag>
+                                    <el-tag size="small" effect="plain" v-else-if="question.kind == 'SHORT'" type="warning">简答题</el-tag>
+                                </td>
+
+                                <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label th-fix-width">难度</th>
+                                <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content th-fix-width">
+                                    <el-tag size="small" effect="dark" v-if="question.difficulty == 'EASY'" type="success">简单</el-tag>
+                                    <el-tag size="small" effect="dark" v-else-if="question.difficulty == 'GENERAL'" type="warning">普通</el-tag>
+                                    <el-tag size="small" effect="dark" v-else-if="question.difficulty == 'HARD'" type="danger">困难</el-tag>
+                                </td>
+                                <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label th-fix-width">正确答案</th>
+                                <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content">
+                                    <div v-if="question.kind == 'JUDGE' || question.kind == 'SINGLE' || question.kind == 'MULTI'">{{question.answer}}</div>
+                                    <div v-else-if="question.kind == 'FILL'" v-html="getRightFillAnswer(question)"></div>
+                                    <div v-else-if="question.kind == 'SHORT'" v-html="getRightShortAnswer(question)"></div>
+                                </td>
+
+                                <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label th-fix-width">用户答案</th>
+                                <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content" v-if="question.kind == 'JUDGE' || question.kind == 'SINGLE' || question.kind == 'MULTI'" :class="getUserAnswer(index) == question.answer ? ['answer-right'] : ['answer-fail']">
+                                    <div>{{getUserAnswer(index) || '未答'}}</div>
+                                </td>
+                                <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content" v-else-if="question.kind == 'FILL'" :class="row.user_answers[index].is_right ? ['answer-right'] : ['answer-fail']">
+                                    <div>{{getUserFillAnswer(index) || '未答'}}</div>
+                                  {{row.user_answers[index].answer.is_right}}
+                                </td>
+                                <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content" v-else-if="question.kind == 'SHORT'" :class="row.user_answers[index].is_right ? ['answer-right'] : ['answer-fail']">
+                                    <div v-html="getUserShortAnswer(index) || '未答'"></div>
+                                    {{row.user_answers[index].answer.is_right}}
+                                </td>
+
+                                <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label th-fix-width">得分</th>
+                                <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content th-fix-width"><b>{{getSingleScore(question, index)}}</b>分</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </el-card>
+
+</div>
+
+<script>
+    var row = {:html_entity_decode(str_replace('&quot;', "'", json_encode($row)))};
+    var app = new Vue({
+        el: '#app',
+        data: {
+            row: row,
+        },
+        computed: {
+            /**
+             * 获取填空题正确答案
+             * @returns {(function(*): (string|string))|*}
+             */
+            getRightFillAnswer() {
+                return function (question) {
+                    if (question && question.answer) {
+                        let html = '';
+                        question.answer.forEach(function (item, index) {
+                            html += '<span class="fill-answer-item">填空位' + (index + 1) + '答案：<b>' + item.answers.join(',') + '</b></span>';
+                        });
+                        return html;
+                    }
+                    return '';
+                }
+            },
+            /**
+             * 获取简答题正确答案
+             * @returns {(function(*): (string|string))|*}
+             */
+            getRightShortAnswer() {
+                return function (question) {
+                    if (question && question.answer) {
+                        let html = '正确答案：<b>' + question.answer.answer + '</b></br>';
+                        question.answer.config.forEach(function (item, index) {
+                            html += '<p class="fill-answer-item">关键词' + (index + 1) + '：<b>' + item.answer + '(' + item.score + '分)' + '</b></p>';
+                        });
+                        return html;
+                    }
+                    return '';
+                }
+            },
+            /**
+             * 获取用户答案
+             * @returns {function(*): string|*}
+             */
+            getUserAnswer() {
+                return function (questionIndex) {
+                    return this.row.user_answers && this.row.user_answers[questionIndex] ? this.row.user_answers[questionIndex].answer : '';
+                }
+            },
+            /**
+             * 获取用户填空题答案
+             * @returns {(function(*): (string|string))|*}
+             */
+            getUserFillAnswer() {
+                return function (questionIndex) {
+                    if (this.row.user_answers && this.row.user_answers[questionIndex]) {
+                        return this.row.user_answers[questionIndex].answer.join(',');
+                    }
+                    return '';
+                }
+            },
+            /**
+             * 获取用户简答题答案
+             * @returns {(function(*): (string|string))|*}
+             */
+            getUserShortAnswer() {
+                return function (questionIndex) {
+                    if (this.row.user_answers && this.row.user_answers[questionIndex]) {
+                        let html = '';
+                        if (this.row.user_answers[questionIndex].answer_score) {
+                            for (let i = 0; i < this.row.user_answers[questionIndex].answer_score.length; i++) {
+                                let short_user_answer = this.row.user_answers[questionIndex].answer_score[i];
+                                html += '<p class="fill-answer-item">' + short_user_answer.answer + '</p>';
+                            }
+                        }
+                        return html
+                        // return this.row.user_answers[questionIndex].answer.join(',');
+                    }
+                    return '';
+                }
+            },
+            /**
+             * 获取用户简答题得分
+             * @returns {(function(*): (string|string))|*}
+             */
+            // getUserShortAnswerScore() {
+            //     return function (questionIndex) {
+            //         let score = 0;
+            //         if (this.row.user_answers && this.row.user_answers[questionIndex]) {
+            //             if (this.row.user_answers[questionIndex].answer_score) {
+            //                 for (let i = 0; i < this.row.user_answers[questionIndex].answer_score.length; i++) {
+            //                     let short_user_answer = this.row.user_answers[questionIndex].answer_score[i];
+            //                     score += short_user_answer.score;
+            //                 }
+            //             }
+            //             // return this.row.user_answers[questionIndex].answer.join(',');
+            //         }
+            //         return score;
+            //     }
+            // },
+            /**
+             * 获取单个题目得分数
+             * @returns {function(*): string|*}
+             */
+            getSingleScore() {
+                return function (question, questionIndex) {
+                    var score = 0;
+                    if (this.row.mode == 'FIX') {
+                        score = question.score;
+                    } else {
+                        score = this.getConfigsScore(question.kind, question.difficulty);
+                    }
+
+                    if (this.row.user_answers && this.row.user_answers[questionIndex]) {
+                        if (question.kind === 'FILL') {
+                            if (this.row.user_answers[questionIndex].is_right) {
+                                return score;
+                            }
+                        } else if (question.kind === 'SHORT') {
+                            let score = 0;
+                            if (this.row.user_answers && this.row.user_answers[questionIndex]) {
+                                if (this.row.user_answers[questionIndex].answer_score) {
+                                    for (let i = 0; i < this.row.user_answers[questionIndex].answer_score.length; i++) {
+                                        let short_user_answer = this.row.user_answers[questionIndex].answer_score[i];
+                                        score += parseInt(short_user_answer.score);
+                                    }
+                                }
+                              // return this.row.user_answers[questionIndex].answer.join(',');
+                            }
+                            return score;
+                        } else {
+                            if (this.row.user_answers[questionIndex].answer === question.answer) {
+                                return score;
+                            }
+                        }
+                    }
+
+                    return 0;
+                }
+            },
+        },
+        created() {
+
+        },
+        methods: {
+            /**
+             * 获取单个题目得分数
+             * @returns {function(*): string|*}
+             */
+            getConfigsScore(kind, difficulty) {
+                const configs = this.row.configs[kind.toLowerCase()];
+                if (configs && configs['use_difficulty']) {
+                    return configs['difficulty'][difficulty.toLowerCase()]['score'];
+                }
+                return configs['score'];
+            },
+
+            /**
+             * 格式化秒数
+             * @param second
+             * @returns {string}
+             */
+            formatSecond: function (second) {
+                if (second == 0) return '不限时'
+
+                let result = parseInt(second)
+                let h = Math.floor(result / 3600) < 10 ? '0' + Math.floor(result / 3600) : Math.floor(result / 3600);
+                let m = Math.floor((result / 60 % 60)) < 10 ? '0' + Math.floor((result / 60 % 60)) : Math.floor((result / 60 % 60));
+                let s = Math.floor((result % 60)) < 10 ? '0' + Math.floor((result % 60)) : Math.floor((result % 60));
+
+                let res = '';
+                if (h !== '00') res += `${h}时`;
+                if (m !== '00') res += `${m}分`;
+                res += `${s}秒`;
+                return res;
+            }
+        }
+    })
+</script>
+<style>
+    .answer-right {
+        background: #E1F3D8;
+    }
+
+    .answer-fail {
+        background: #FDE2E2;
+    }
+
+    .question-item {
+        padding: 15px;
+    }
+
+    .option-item {
+        margin-left: 10px;
+    }
+
+    .th-fix-width {
+        width: 100px;
+        text-align: center !important;
+    }
+
+    .fill-answer-item {
+        margin-right: 20px;
+    }
+</style>

@@ -1,0 +1,173 @@
+<script src="__CDN__/assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="__CDN__/assets/addons/exam/js/vue.js"></script>
+<link rel="stylesheet" type="text/css" href="__CDN__/assets/addons/exam/css/common.css"></link>
+<script src="__CDN__/assets/addons/exam/js/element-ui/index.js"></script>
+<link rel="stylesheet" type="text/css" href="__CDN__/assets/addons/exam/js/element-ui/index.css"></link>
+
+<div id="app">
+    <form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Cate_id')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="c-cate_id" data-rule="required" data-source="exam/cate/selectpage"
+                       data-params='{"custom[kind]":"PAPER","isTree":true}' class="form-control selectpage" name="row[cate_id]"
+                       type="text" value="">
+            </div>
+        </div>
+
+        <!--<div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Kind')}:</label>
+            <div class="col-xs-12 col-sm-8">
+
+                <select  id="c-kind" data-rule="required" class="form-control selectpicker" name="row[kind]">
+                    {foreach name="kindList" item="vo"}
+                        <option value="{$key|htmlentities}" {in name="key" value="RANDOM"}selected{/in}>{$vo|htmlentities}</option>
+                    {/foreach}
+                </select>
+
+            </div>
+        </div>-->
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Title')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="c-title" data-rule="required" class="form-control" name="row[title]" type="text"
+                       placeholder="请输入试卷名称">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Quantity')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="c-quantity" data-rule="required" class="form-control" name="row[quantity]" type="number" step="1"
+                       min="1" value="100" placeholder="请输入试卷总题数">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Total_score')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="c-total_score" data-rule="required" class="form-control" name="row[total_score]" type="number"
+                       step="1" min="1" value="100" placeholder="请输入试卷总分数">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Pass_score')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="c-pass_score" data-rule="required" class="form-control" name="row[pass_score]" type="number"
+                       step="1" min="1" placeholder="请输入及格分数">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Mode')}:</label>
+            <div class="col-xs-12 col-sm-8">
+
+                <div class="radio">
+                    {foreach name="modeList" item="vo"}
+                    <label for="row[mode]-{$key|htmlentities}">
+                      <input @change="changeMode" id="row[mode]-{$key|htmlentities}" name="row[mode]" type="radio" value="{$key|htmlentities}" {in name="key" value="RANDOM" }checked{/in} /> {$vo|htmlentities}
+                    </label>
+                    {/foreach}
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Configs')}:</label>
+            <div class="col-xs-12 col-sm-8" v-show="mode === 'RANDOM'" id="div_random_configs">
+                <input id="c-configs" class="form-control hide" name="row[configs]" type="text">
+                <!--<a href="javascript:;" class="btn btn-sm btn-success btn-configs"><i class="fa fa-cog"></i> 随机选题配置</a>-->
+
+                {include file="../application/admin/view/exam/paper/configs_setting.html" /}
+            </div>
+
+            <div class="col-xs-12 col-sm-8" v-show="mode === 'FIX'">
+                <a href="javascript:;" class="btn btn-sm btn-success btn-fix-configs margin-bottom" @click="openQuestionSelect()"><i class="fa fa-cog"></i> 固定选题配置</a>
+
+                {include file="../application/admin/view/exam/paper/configs_setting_fix.html" /}
+            </div>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Limit_time')}:</label>
+            <div class="col-xs-12 col-sm-8" style="line-height: 31px;">
+                <input id="c-limit_time" data-rule="required" class="form-control hide" name="row[limit_time]" type="number"
+                       step="1" min="0" value="0" style="width: 200px" placeholder="考试限时，0不限制">
+
+                <input id="c-limit_time_hour" data-rule="required" class="form-control" name="row[limit_time_hour]"
+                       type="number" step="1" min="0" max="23" value="0" style="width: 100px" placeholder="考试限时小时">时
+                <input id="c-limit_time_minute" data-rule="required" class="form-control" name="row[limit_time_minute]"
+                       type="number" step="1" min="0" max="60" value="60" style="width: 100px" placeholder="考试限时分钟，0不限制">分
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Day_limit_count')}:</label>
+            <div class="col-xs-12 col-sm-8" style="line-height: 31px;">
+                <input id="c-day_limit_count" data-rule="required" class="form-control" name="row[day_limit_count]" type="number"
+                       step="1" min="0" value="0" style="width: 200px" placeholder="考试限时，0不限制">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Start_time')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="c-start_time" data-rule="match(lte, row[end_time], date);" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[start_time]" type="text" value="{:date('Y-m-d H:i:s')}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('End_time')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="c-end_time" data-rule="match(gte, row[start_time], date);" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[end_time]" type="text" value="">
+                <p class="text-info">* 试卷使用时间，清空则不限制试卷使用时间</p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Is_only_room')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="c-is_only_room" name="row[is_only_room]" type="hidden" value="{$row.is_only_room|default=0}">
+                <a href="javascript:;" data-toggle="switcher" class="btn-is_only_room" data-input-id="c-is_only_room" data-yes="1" data-no="0" >
+                    <i class="fa fa-toggle-on text-success fa-flip-horizontal text-gray fa-2x"></i>
+                </a>
+                <p class="text-info">* 开启该功能后，该试卷将不再显示于前端试卷列表，仅考场可使用</p>
+            </div>
+        </div>
+
+        <!--<div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('End_time')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                <input id="c-end_time" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[end_time]" type="text" value="">
+
+                <p class="text-info">* 试卷结束使用时间，清空则不限制试卷使用时间</p>
+            </div>
+        </div>-->
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
+            <div class="col-xs-12 col-sm-8">
+
+                <div class="radio">
+                    {foreach name="statusList" item="vo"}
+                    <label for="row[status]-{$key|htmlentities}">
+                        <input id="row[status]-{$key|htmlentities}" name="row[status]" type="radio" value="{$key|htmlentities}" {in name="key" value="NORMAL" }checked{/in} /> {$vo|htmlentities}</label>
+                    {/foreach}
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group layer-footer">
+            <label class="control-label col-xs-12 col-sm-2"></label>
+            <div class="col-xs-12 col-sm-8">
+                <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+                <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+<!--试卷设置扩展-->
+{include file="../application/admin/view/exam/paper/extend.html" /}

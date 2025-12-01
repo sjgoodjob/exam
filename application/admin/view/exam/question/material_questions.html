@@ -1,0 +1,117 @@
+<div>
+    <!--统计信息-->
+    <div class="margin-bottom">
+        <el-row :gutter="24">
+            <el-col :span="6">
+                <div>
+                    <el-statistic title="总题数/分数">
+                        <template slot="formatter"> {{materialSummary.total_quantity}}/{{materialSummary.total_score}} </template>
+                    </el-statistic>
+                </div>
+            </el-col>
+            <el-col :span="6">
+                <div>
+                    <el-statistic title="判断题数/分数">
+                        <template slot="formatter"> {{materialSummary.judge_quantity}}/{{materialSummary.judge_score}} </template>
+                    </el-statistic>
+                </div>
+            </el-col>
+            <el-col :span="6">
+                <div>
+                    <el-statistic title="单选题数/分数">
+                        <template slot="formatter"> {{materialSummary.single_quantity}}/{{materialSummary.single_score}} </template>
+                    </el-statistic>
+                </div>
+            </el-col>
+            <el-col :span="6">
+                <div>
+                    <el-statistic title="多选题数/分数">
+                        <template slot="formatter"> {{materialSummary.multi_quantity}}/{{materialSummary.multi_score}} </template>
+                    </el-statistic>
+                </div>
+            </el-col>
+        </el-row>
+
+        <el-row :gutter="24" class="m-t-5">
+            <el-col :span="6">
+                <div>
+                    <el-statistic title="填空题数/分数">
+                        <template slot="formatter"> {{materialSummary.fill_quantity}}/{{materialSummary.fill_score}} </template>
+                    </el-statistic>
+                </div>
+            </el-col>
+            <el-col :span="6">
+                <div>
+                    <el-statistic title="简答题数/分数">
+                        <template slot="formatter"> {{materialSummary.short_quantity}}/{{materialSummary.short_score}} </template>
+                    </el-statistic>
+                </div>
+            </el-col>
+        </el-row>
+    </div>
+
+    <!--试题列表-->
+    <el-table :data="materialQuestions" height="350" border style="width: 100%">
+        <el-table-column prop="id" label="ID" width="80"></el-table-column>
+        <el-table-column prop="cates.name" label="分类" width="120">
+            <template slot-scope="scope">
+                <span v-if="scope.row.cate">{{scope.row.cate.name}}</span>
+                <span v-else-if="scope.row.cates">{{scope.row.cates.name}}</span>
+            </template>
+        </el-table-column>
+        <el-table-column prop="title" label="标题"></el-table-column>
+        <el-table-column prop="kind" label="题型" width="80">
+            <template slot-scope="scope">
+                <el-tag size="small" effect="plain" v-if="scope.row.kind == 'JUDGE'">判断题</el-tag>
+                <el-tag size="small" effect="plain" v-else-if="scope.row.kind == 'SINGLE'" type="success">单选题</el-tag>
+                <el-tag size="small" effect="plain" v-else-if="scope.row.kind == 'MULTI'" type="info">多选题</el-tag>
+                <el-tag size="small" effect="plain" v-else-if="scope.row.kind == 'FILL'" type="warning">填空题</el-tag>
+                <el-tag size="small" effect="plain" v-else-if="scope.row.kind == 'SHORT'" type="danger">简答题</el-tag>
+            </template>
+        </el-table-column>
+        <el-table-column prop="score" label="分数" align="center">
+            <template slot-scope="scope">
+                <div v-if="scope.row.kind == 'SHORT'">
+                    <!--简答题最大分数-->
+                    <div>
+                        <span>最大得分数</span>
+                        <el-input-number size="mini" v-model="scope.row.score" :min="1" step-strictly @change="scoreChange(scope.$index)"></el-input-number>
+                    </div>
+
+                    <div class="m-t-5">
+                        <!--设置简答题各关键词分数-->
+                        <el-button size="small" type="primary" @click="openShortScoreDialog(scope.row, scope.$index)">设置关键词分数</el-button>
+                    </div>
+                </div>
+                <div v-else>
+                    <el-input-number size="mini" v-model="scope.row.score" :min="1" step-strictly @change="scoreChange(scope.$index)"></el-input-number>
+                </div>
+
+            </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" width="100">
+            <template slot-scope="scope">
+                <el-button type="danger" icon="el-icon-delete" size="small" @click="deleteQuestion(scope.$index)">删除</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+
+    <button id="valid" type="button" @click="valid()" class="hide">验证</button>
+    <input type="hidden" name="row[material_questions]" id="c-material_questions">
+</div>
+
+<!--简答题关键词分数设置弹窗-->
+<el-dialog title="简答题关键词分数设置" :visible.sync="shortScoreDialogVisible" width="50%">
+    <el-table :data="shortScoreConfig" height="350" border style="width: 100%">
+        <el-table-column prop="answer" label="关键词"></el-table-column>
+        <el-table-column prop="score" label="得分数">
+            <template slot-scope="scope">
+                <el-input-number size="mini" v-model="scope.row.score" :min="1" step-strictly></el-input-number>
+            </template>
+        </el-table-column>
+    </el-table>
+    <div slot="footer" class="dialog-footer">
+        <el-button @click="shortScoreDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="shortScoreDialogVisible = false; shortScoreSubmit()">确 定</el-button>
+    </div>
+</el-dialog>

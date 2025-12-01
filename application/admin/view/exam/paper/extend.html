@@ -1,0 +1,259 @@
+<script>
+    var valid_result = false
+    {notempty name="row"}
+    var row = {:json_encode($row, 256)};
+    {else/}
+    var row = {};
+    {/notempty}
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            mode: 'RANDOM',
+            questions: [],
+            summary: {
+                // 总分数及题数
+                total_score: 0,
+                total_quantity: 0,
+                // 各类题目的分数及题数
+                judge_quantity: 0,
+                judge_score: 0,
+                single_quantity: 0,
+                single_score: 0,
+                multi_quantity: 0,
+                multi_score: 0,
+                fill_quantity: 0,
+                fill_score: 0,
+                short_quantity: 0,
+                short_score: 0,
+                material_quantity: 0,
+                material_score: 0,
+            },
+            // 简答题分数设置
+            shortScoreDialogVisible: false,
+            shortScoreConfig: [],
+            shortScoreIndex: 0,
+        },
+        created() {
+            if (row && row.mode) {
+                this.mode = row.mode
+                // $('input[name="row[mode]"][value="' + row.mode + '"]').prop('checked', true)
+                // $('#row[mode]-' + row.mode).click()
+                console.log('row.mode', row.mode, this.mode, row)
+                this.questions = row.questions ? row.questions : []
+                this.statistics()
+            } else {
+                this.mode = 'RANDOM'
+            }
+        },
+        methods: {
+            // 修改选题模式
+            changeMode(e) {
+                console.log('changeMode', e.target.value)
+                this.mode = e.target.value
+            },
+
+            // 打开试题选择
+            openQuestionSelect() {
+                console.log('openQuestionSelect')
+
+                Fast.api.open('exam/question/select', '选择试题', {
+                    area: ['90%', '90%'],
+                    callback: (data) => {
+                        console.log('question select callback', data)
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].score = 1
+                        }
+                        // 排除已经存在的试题
+                        for (let i = 0; i < this.questions.length; i++) {
+                            for (let j = 0; j < data.length; j++) {
+                                if (this.questions[i].id == data[j].id) {
+                                    data.splice(j, 1)
+                                }
+                            }
+                        }
+                        // 合并数组
+                        this.questions = this.questions.concat(data)
+                        // 统计题目信息
+                        this.statistics()
+                    }
+                })
+            },
+
+            // 修改分数
+            scoreChange(index) {
+                console.log('scoreChange', index)
+                // 统计题目信息
+                this.statistics()
+            },
+
+            // 修改排序
+            sortChange(index) {
+                console.log('sortChange', index)
+            },
+
+            // 打开简答题关键词分数设置
+            openShortScoreDialog(row, index) {
+                let answer = row.answer
+                if (typeof answer == 'string') {
+                    answer = JSON.parse(answer)
+                }
+                console.log('openShortScoreDialog', row, index, answer)
+                this.shortScoreConfig = [...answer.config]
+                this.shortScoreIndex = index
+                this.shortScoreDialogVisible = true
+            },
+            // 提交简答题关键词分数设置
+            shortScoreSubmit() {
+                console.log('shortScoreSubmit', this.shortScoreConfig, this.questions[this.shortScoreIndex])
+                let answer = this.questions[this.shortScoreIndex].answer
+                if (typeof answer == 'string') {
+                    answer = JSON.parse(answer)
+                }
+                answer.config = this.shortScoreConfig
+                this.questions[this.shortScoreIndex].answer = answer
+
+                this.shortScoreConfig = null
+                this.shortScoreIndex = 0
+                this.shortScoreDialogVisible = false
+
+                // 统计题目信息
+                this.statistics()
+            },
+
+            // 删除试题
+            deleteQuestion(index) {
+                console.log('deleteQuestion', index)
+                this.questions.splice(index, 1)
+                // 统计题目信息
+                this.statistics()
+            },
+
+            // 统计题目信息
+            statistics() {
+                console.log('statistics')
+                this.summary.total_score = 0
+                this.summary.total_quantity = 0
+                this.summary.judge_quantity = 0
+                this.summary.judge_score = 0
+                this.summary.single_quantity = 0
+                this.summary.single_score = 0
+                this.summary.multi_quantity = 0
+                this.summary.multi_score = 0
+                this.summary.fill_quantity = 0
+                this.summary.fill_score = 0
+                this.summary.short_quantity = 0
+                this.summary.short_score = 0
+                this.summary.material_quantity = 0
+                this.summary.material_score = 0
+
+                for (let i = 0; i < this.questions.length; i++) {
+                    let question = this.questions[i]
+                    this.summary.total_score += question.score
+                    this.summary.total_quantity += 1
+                    switch (question.kind) {
+                        case 'JUDGE':
+                            this.summary.judge_quantity += 1
+                            this.summary.judge_score += question.score
+                            break
+                        case 'SINGLE':
+                            this.summary.single_quantity += 1
+                            this.summary.single_score += question.score
+                            break
+                        case 'MULTI':
+                            this.summary.multi_quantity += 1
+                            this.summary.multi_score += question.score
+                            break
+                        case 'FILL':
+                            this.summary.fill_quantity += 1
+                            this.summary.fill_score += question.score
+                            break
+                        case 'SHORT':
+                            this.summary.short_quantity += 1
+                            this.summary.short_score += question.score
+                            break
+                        case 'MATERIAL':
+                            this.summary.material_quantity += 1
+                            this.summary.material_score += question.score
+                            break
+                    }
+                }
+            },
+
+            // 验证
+            valid() {
+                var quantity = $('#c-quantity').val()
+                var total_score = $('#c-total_score').val()
+                console.log('trigger valid', this.mode, quantity, total_score)
+                switch (this.mode) {
+                    case 'FIX':
+                        if (quantity == 0) {
+                            Toastr.error('固定模式下，试卷题数不能为0')
+                            return false
+                        }
+                        if (total_score == 0) {
+                            Toastr.error('固定模式下，试卷总分不能为0')
+                            return false
+                        }
+                        if (this.questions.length == 0) {
+                            Toastr.error('固定模式下，试卷题目不能为空')
+                            return false
+                        }
+                        if (this.summary.total_score != total_score) {
+                            Toastr.error('固定模式下，试卷总分与题目总分不一致')
+                            return false
+                        }
+                        if (this.summary.total_quantity != quantity) {
+                            Toastr.error('固定模式下，试卷题数与题目总数不一致')
+                            return false
+                        }
+
+                        // 将试题信息转换为JSON字符串
+                        let questions = []
+                        for (let i = 0; i < this.questions.length; i++) {
+                            let question = this.questions[i]
+                            questions.push({
+                                id: question.id,
+                                score: question.score,
+                                answer: question.answer,
+                                sort: question.sort
+                            })
+                        }
+                        $('#c-questions').val(JSON.stringify(questions))
+
+                        valid_result = true
+                        return true
+                    default:
+                        valid_result = true
+                        return true
+
+                }
+            },
+            // 刷新排序
+            refreshSort() {
+                // 按照sort排序，数值大靠前
+                this.questions.sort((a, b) => {
+                    return b.sort - a.sort
+                })
+            }
+        }
+    })
+</script>
+<style>
+    .w-60 {
+        width: 60px;
+    }
+
+    .m-l-25 {
+        margin-left: 25px !important;
+    }
+
+    .p-l-80 {
+        margin-left: 80px !important;
+    }
+
+    .el-input-number--mini {
+        width: 90px;
+        line-height: 26px;
+    }
+</style>

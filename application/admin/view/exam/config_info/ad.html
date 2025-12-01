@@ -1,0 +1,229 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="panel panel-default">
+        <div class="panel-heading">首页</div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">插屏广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-index_cp" class="form-control" name="row[index_cp]" type="text" value="{$row.index_cp|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-index_cp_open" name="row[index_cp_open]" type="hidden" value="{$row.index_cp_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-index_cp_open" data-input-id="c-index_cp_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['index_cp_open']) || !$row['index_cp_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">banner广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-index_banner" class="form-control" name="row[index_banner]" type="text" value="{$row.index_banner|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-index_banner_open" name="row[index_banner_open]" type="hidden" value="{$row.index_banner_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-index_banner_open" data-input-id="c-index_banner_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['index_banner_open']) || !$row['index_banner_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">视频广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-index_video" class="form-control" name="row[index_video]" type="text" value="{$row.index_video|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-index_video_open" name="row[index_video_open]" type="hidden" value="{$row.index_video_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-index_video_open" data-input-id="c-index_video_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['index_video_open']) || !$row['index_video_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">视频贴片广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-index_video_patch" class="form-control" name="row[index_video_patch]" type="text" value="{$row.index_video_patch|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-index_video_patch_open" name="row[index_video_patch_open]" type="hidden" value="{$row.index_video_patch_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-index_video_patch_open" data-input-id="c-index_video_patch_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['index_video_patch_open']) || !$row['index_video_patch_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">我的页面</div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">插屏广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-my_cp" class="form-control" name="row[my_cp]" type="text" value="{$row.my_cp|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-my_cp_open" name="row[my_cp_open]" type="hidden" value="{$row.my_cp_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-my_cp_open" data-input-id="c-my_cp_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['my_cp_open']) || !$row['my_cp_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">banner广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-my_banner" class="form-control" name="row[my_banner]" type="text" value="{$row.my_banner|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-my_banner_open" name="row[my_banner_open]" type="hidden" value="{$row.my_banner_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-my_banner_open" data-input-id="c-my_banner_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['my_banner_open']) || !$row['my_banner_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">视频广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-my_video" class="form-control" name="row[my_video]" type="text" value="{$row.my_video|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-my_video_open" name="row[my_video_open]" type="hidden" value="{$row.my_video_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-my_video_open" data-input-id="c-my_video_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['my_video_open']) || !$row['my_video_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">视频贴片广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-my_video_patch" class="form-control" name="row[my_video_patch]" type="text" value="{$row.my_video_patch|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-my_video_patch_open" name="row[my_video_patch_open]" type="hidden" value="{$row.my_video_patch_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-my_video_patch_open" data-input-id="c-my_video_patch_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['my_video_patch_open']) || !$row['my_video_patch_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">题目搜索页</div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">插屏广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-question_search_cp" class="form-control" name="row[question_search_cp]" type="text" value="{$row.question_search_cp|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-question_search_cp_open" name="row[question_search_cp_open]" type="hidden" value="{$row.question_search_cp_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-question_search_cp_open" data-input-id="c-question_search_cp_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['question_search_cp_open']) || !$row['question_search_cp_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">banner广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-question_search_banner" class="form-control" name="row[question_search_banner]" type="text" value="{$row.question_search_banner|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-question_search_banner_open" name="row[question_search_banner_open]" type="hidden" value="{$row.question_search_banner_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-question_search_banner_open" data-input-id="c-question_search_banner_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['question_search_banner_open']) || !$row['question_search_banner_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">视频广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-question_search_video" class="form-control" name="row[question_search_video]" type="text" value="{$row.question_search_video|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-question_search_video_open" name="row[question_search_video_open]" type="hidden" value="{$row.question_search_video_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-question_search_video_open" data-input-id="c-question_search_video_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['question_search_video_open']) || !$row['question_search_video_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">视频贴片广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-question_search_video_patch" class="form-control" name="row[question_search_video_patch]" type="text" value="{$row.question_search_video_patch|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-question_search_video_patch_open" name="row[question_search_video_patch_open]" type="hidden" value="{$row.question_search_video_patch_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-question_search_video_patch_open" data-input-id="c-question_search_video_patch_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['question_search_video_patch_open']) || !$row['question_search_video_patch_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">排行榜</div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">插屏广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-rank_cp" class="form-control" name="row[rank_cp]" type="text" value="{$row.rank_cp|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-rank_cp_open" name="row[rank_cp_open]" type="hidden" value="{$row.rank_cp_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-rank_cp_open" data-input-id="c-rank_cp_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['rank_cp_open']) || !$row['rank_cp_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">banner广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-rank_banner" class="form-control" name="row[rank_banner]" type="text" value="{$row.rank_banner|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-rank_banner_open" name="row[rank_banner_open]" type="hidden" value="{$row.rank_banner_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-rank_banner_open" data-input-id="c-rank_banner_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['rank_banner_open']) || !$row['rank_banner_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">视频广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-rank_video" class="form-control" name="row[rank_video]" type="text" value="{$row.rank_video|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-rank_video_open" name="row[rank_video_open]" type="hidden" value="{$row.rank_video_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-rank_video_open" data-input-id="c-rank_video_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['rank_video_open']) || !$row['rank_video_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">视频贴片广告:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-rank_video_patch" class="form-control" name="row[rank_video_patch]" type="text" value="{$row.rank_video_patch|default=''}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-rank_video_patch_open" name="row[rank_video_patch_open]" type="hidden" value="{$row.rank_video_patch_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-rank_video_patch_open" data-input-id="c-rank_video_patch_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['rank_video_patch_open']) || !$row['rank_video_patch_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" name="type" value="ad">
+    <input type="hidden" name="config_id" {notempty name="$config_id" }value="{$config_id|htmlentities}" {/notempty}>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}
+            </button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+
+</form>

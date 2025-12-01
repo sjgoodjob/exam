@@ -1,0 +1,286 @@
+<!-- view/exam/question/ai.html -->
+<script src="__CDN__/assets/libs/jquery/dist/jquery.min.js"></script>
+
+<style>
+    .ai-gen-container {
+        padding: 30px;
+    }
+    .ai-gen-container .title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .ai-type-options label {
+        margin-right: 30px;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .tag-sample {
+        background: #f0f0f0;
+        border-radius: 4px;
+        display: inline-block;
+        padding: 4px 10px;
+        margin: 5px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+    .question-counts input {
+        width: 60px;
+        text-align: center;
+    }
+
+    .option-list {
+    list-style-type: upper-alpha; /* A, B, C, D */
+    padding-left: 20px;           /* 保留缩进 */
+    }
+
+    .option-list li::marker {
+    content: counter(list-item, upper-alpha) ". ";
+    }
+
+</style>
+
+<div class="ai-gen-container">
+    <div class="title">请设置您的命题需求</div>
+
+    <form id="ai-form" role="form" method="post">
+        <!-- 命题方式 -->
+        <div class="form-group ai-type-options">
+            <label><input type="radio" name="mode" value="knowledge" checked> 按学科/知识点/活动等生成题目</label>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('Cate_id')}:</label>
+            <div >
+                <input id="c-cate_id" data-rule="required" data-source="exam/cate/selectpage" data-params='{"custom[kind]":"QUESTION","isTree":true}' class="form-control selectpage" name="row[cate_id]" type="text" value="" />
+            </div>
+        </div>
+        <!-- 命题内容输入 -->
+        <div class="form-group">
+            <textarea name="prompt" class="form-control" rows="5" maxlength="200"
+                      placeholder="请输入学科、知识点、活动等内容，AI将自动查询相关资料并为您生成题目！"></textarea>
+            <div class="help-block">
+                示例试试：
+                <span class="tag-sample">财会必备的财务知识</span>
+                <span class="tag-sample">保险代理人拜访客户的技巧</span>
+                <span class="tag-sample">春节知识竞赛活动</span>
+            </div>
+        </div>
+       
+        <!-- 题型数量 -->
+        <div class="form-group question-counts">
+            <label>题目数量（最多可生成25题）：</label><br>
+            <label>单选题 <input type="number" min="0" max="25" name="single" value="0"> </label>
+            <label>多选题 <input type="number" min="0" max="25" name="multi" value="0"> </label>
+            <label>判断题 <input type="number" min="0" max="25" name="judge" value="0"> </label>
+            <label>填空题 <input type="number" min="0" max="25" name="fill" value="0"> </label>
+            <label>问答题 <input type="number" min="0" max="25" name="short" value="0"> </label>
+            <button type="button" class="btn btn-success pull-right" id="btn-generate">生成题目</button>
+
+        </div>
+
+   
+
+        <div id="question-preview"></div>
+        <div class="form-group">
+            <button type="button" class="btn btn-primary" id="btn-insert-all">📥 一键添加全部题目</button>
+        </div>
+        
+    </form>
+</div>
+
+<script>
+    $(function () {
+        // 示例点击填充
+        $('.tag-sample').click(function () {
+            $('textarea[name="prompt"]').val($(this).text());
+        });
+
+
+        
+    
+        let questions = []; // 全局变量保存 AI 返回的题目数组
+
+        // 生成按钮点击事件
+        $('#btn-generate').click(function () {
+            var formData = $('#ai-form').serialize();
+            Fast.api.ajax({
+                url: 'exam/question/doAIGenerate',
+                data: $('#ai-form').serialize()
+            }, function (data,res) {
+                // ✅ 此时 data 是 data.questions
+                questions = data.questions; // 正确！
+
+                var html = '';
+
+                questions.forEach(function (q, index) {
+                    html += '<div class="panel panel-default" style="margin-bottom:10px;">';
+                    html += '<div class="panel-heading">第 ' + (index + 1) + ' 题（' + q.kind + '）</div>';
+                    html += '<div class="panel-body">';
+                    html += '<p><strong>题干：</strong> ' + q.title + '</p>';
+
+                    // 渲染选项（仅限 SINGLE / MULTI）
+                    if (q.kind === 'SINGLE' || q.kind === 'MULTI') {
+                        html += '<ul class="option-list">';
+                        q.options.forEach(function (opt, i) {
+                            html += '<li>'  + opt + '</li>';
+                        });
+                        html += '</ul>';
+                    }
+
+                    html += '<p><strong>答案：</strong> ' + q.answer + '</p>';
+                    html += '<p><strong>解析：</strong> ' + q.explanation + '</p>';
+                    html += `<button class="btn btn-success btn-insert" data-index="${index}">添加</button>`;
+                    
+                    html += '</div></div>';
+                });
+
+                $('#question-preview').html(html);
+                return false; // 防止关闭窗口
+            });
+
+        });
+    
+        function insertQuestion(q, $btn) {
+            return new Promise((resolve) => {
+                const keys = ['A', 'B', 'C', 'D', 'E', 'F'];
+                const options = {};
+                let answerKey = '';
+                let title_fill = '';
+                let fillAnswerArray = [];
+
+                if (q.kind === 'SINGLE' || q.kind === 'MULTI') {
+                    const answerKeys = [];
+                    q.options.forEach((opt, i) => {
+                        const key = keys[i];
+                        options[key] = opt;
+
+                        if (typeof q.answer === 'string') {
+                            const answerArr = q.answer.split(',').map(a => a.trim().toLowerCase());
+                            if (answerArr.includes(opt.trim().toLowerCase())) {
+                                answerKeys.push(key);
+                            }
+                        } else if (Array.isArray(q.answer)) {
+                            if (q.answer.includes(opt)) {
+                                answerKeys.push(key);
+                            }
+                        }
+                    });
+
+                    answerKey = answerKeys.join(',');
+                } else if (q.kind === 'FILL') {
+                    // ✅ 填空题特殊处理
+                    title_fill = q.title || '';
+
+                    // 构建填空题答案数组（支持单空或多空）
+                    if (typeof q.answer === 'string') {
+                        const blanks = q.answer.split(',').map(item => item.trim());
+                        fillAnswerArray = blanks.map(ans => ({ answers: [ans] }));
+                    } else if (Array.isArray(q.answer)) {
+                        fillAnswerArray = q.answer.map(ans => ({ answers: [ans] }));
+                    }
+
+                    answerKey = ''; // 填空题不需要主 answer 字符串
+                } else {
+                    // 判断题/简答题
+                    answerKey = q.answer;
+                }
+
+                // 基本字段校验
+                if (!answerKey && q.kind !== 'FILL') {
+                    Toastr.error('未能匹配答案选项，请检查 AI 返回内容');
+                    resolve(false);
+                    return;
+                }
+
+                const postData = {
+                    row: {
+                        cate_id: $('#c-cate_id').val(),
+                        title: q.title,
+                        kind: q.kind,
+                        options_json: (q.kind === 'SINGLE' || q.kind === 'MULTI') ? JSON.stringify(options) : '',
+                        answer: (q.kind === 'FILL') ? fillAnswerArray : answerKey,
+                        explain: q.explanation,
+                        difficulty: 'GENERAL',
+                        status: 'NORMAL',
+                        is_material_child: 0,
+                        material_question_id: '',
+                        material_question_id_text: '',
+                        material_score: 0,
+                        options_img: '',
+                        short_answer: '',
+                        title_fill: title_fill,
+                        title_video: '',
+                        explain_video: '',
+                        material_questions: ''
+                    }
+                };
+
+                Fast.api.ajax({
+                    url: 'exam/question/add',
+                    data: postData,
+                    method: 'POST'
+                }, function () {
+                    if ($btn) {
+                        $btn.prop('disabled', true).text('✅ 已添加');
+                    }
+                    resolve(true);
+                }, function () {
+                    Toastr.error('添加失败');
+                    resolve(false);
+                });
+            });
+        }
+
+
+
+
+
+
+
+        $(document).off('click', '.btn-insert').on('click', '.btn-insert', function (e) {
+            e.preventDefault(); // 👈 阻止表单默认提交
+
+            const index = $(this).data('index');
+            const q = questions[index];
+            if (!q) {
+                Toastr.error('题目数据不存在');
+                return;
+            }
+
+            insertQuestion(q, $(this));
+        });
+
+     
+
+        // 一键全部插入按钮点击事件
+        $('#btn-insert-all').click(async function () {
+            if (!questions.length) {
+                Toastr.warning('请先生成题目');
+                return;
+            }
+
+            $(this).prop('disabled', true).text('⏳ 正在批量添加...');
+
+            let successCount = 0;
+
+            for (let i = 0; i < questions.length; i++) {
+                const q = questions[i];
+                const $btn = $(`.btn-insert[data-index="${i}"]`);
+                  // ✅ 如果按钮已禁用，说明已经单独添加过，跳过
+                if ($btn.prop('disabled')) {
+                    continue;
+                }
+                const ok = await insertQuestion(q, $btn);
+                if (ok) successCount++;
+            }
+
+            Toastr.success(`✅ 添加完成，成功 ${successCount}/${questions.length} 题`);
+            $(this).prop('disabled', false).text('一键添加全部');
+        });
+
+
+    });
+    </script>
+    
