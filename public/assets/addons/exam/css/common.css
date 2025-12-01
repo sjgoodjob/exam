@@ -1,0 +1,23 @@
+.m-t-5 {
+    margin-top: 5px;
+}
+
+.m-l-5 {
+    margin-left: 5px;
+}
+
+.m-l-10 {
+    margin-left: 10px !important;
+}
+
+.fill-option {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px;
+}
+
+.short-option {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px;
+}
