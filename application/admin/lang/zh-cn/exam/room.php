@@ -22,5 +22,9 @@ return [
     'Createtime'           => '创建时间',
     'Updatetime'           => '修改时间',
     'Paper.title'          => '试卷名称',
-    'Cate.name'            => '考场分类'
+    'Cate.name'            => '考场分类',
+    'Cert_config_id'       => '证书生成配置',
+    'qrcode_h5'            => '考场H5二维码',
+    'cover_image'          => '封面图片',
+    'Subject_id'           => '所属科目',
 ];

@@ -1,0 +1,103 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-name" data-rule="required" class="form-control" name="row[name]" type="text" value="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('page_style')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-page_style" data-rule="required" class="form-control selectpicker" name="row[page_style]">
+                {foreach name="pageStyleList" item="vo"}
+                    <option value="{$key|htmlentities}" {in name="key" value="$Think.get.page_style"}selected{/in}>{$vo|htmlentities}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Type')}:</label>
+        <div class="col-xs-12 col-sm-8">
+
+            <select  id="c-type" data-rule="required" class="form-control selectpicker" name="row[type]">
+                {foreach name="typeList" item="vo"}
+                    <option value="{$key|htmlentities}" {in name="key" value="icon"}selected{/in}>{$vo|htmlentities}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group" data-favisible="type=icon">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Icon')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-icon" class="form-control" name="row[icon]" type="text" value="" placeholder="例如：search">
+            <p class="help-block">* <a href="https://tuniao.ahuaaa.cn/#/basicPage/icon/icon" target="_blank">点击前往图标列表选择</a>，复制到这里</p>
+        </div>
+    </div>
+    <div class="form-group" data-favisible="type=icon">
+        <label class="control-label col-xs-12 col-sm-2">{:__('color')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-color" class="form-control" name="row[color]" type="text" value="" placeholder="例如：tn-bg-orange">
+            <p class="help-block">* <a href="https://vue2.tuniaokj.com/components/color.html" target="_blank">点击前往颜色页面选择</a>，复制到这里</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('bg_color')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-bg_color" class="form-control" name="row[bg_color]" type="text" value="">
+            <p class="help-block">* 仅【精简风格】有效，<a href="https://vue2.tuniaokj.com/components/color.html" target="_blank">点击前往颜色页面选择</a>，复制到这里</p>
+        </div>
+    </div>
+    <div class="form-group" data-favisible="type=image">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Image')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input id="c-image" class="form-control" size="50" name="row[image]" type="text" value="">
+                <div class="input-group-addon no-border no-padding">
+                    <span><button type="button" id="faupload-image" class="btn btn-danger faupload" data-input-id="c-image" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/webp" data-multiple="false" data-preview-id="p-image"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                    <span><button type="button" id="fachoose-image" class="btn btn-primary fachoose" data-input-id="c-image" data-mimetype="image/*" data-multiple="false"><i class="fa fa-list"></i> {:__('Choose')}</button></span>
+                </div>
+                <span class="msg-box n-right" for="c-image"></span>
+            </div>
+            <ul class="row list-inline faupload-preview" id="p-image"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Path')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <select name="row[path]" id="url" class="form-control" data-rule="required">
+                <option value="">请选择</option>
+                {volist name="pages" id="vo"}
+                <option value="{$vo.path|htmlentities}">{$vo.name|htmlentities}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Weigh')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-weigh" data-rule="required" class="form-control" name="row[weigh]" type="number" value="1">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            
+            <div class="radio">
+            {foreach name="statusList" item="vo"}
+            <label for="row[status]-{$key|htmlentities}"><input id="row[status]-{$key|htmlentities}" name="row[status]" type="radio" value="{$key|htmlentities}" {in name="key" value="1"}checked{/in} /> {$vo|htmlentities}</label>
+            {/foreach}
+            </div>
+
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>

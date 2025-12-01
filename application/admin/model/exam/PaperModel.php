@@ -26,10 +26,23 @@ class PaperModel extends BaseModel
         = [
             'mode_text',
             'status_text',
+            'uses_text',
             'start_time_text',
             'end_time_text',
         ];
 
+    protected static function init()
+    {
+        // 同步保存分类的科目到试卷
+        self::afterWrite(function ($row) {
+            if (!empty($row['cate_id'])) {
+                $cate = CateModel::get($row['cate_id']);
+                if ($cate && !empty($cate['subject_id'])) {
+                    self::where('cate_id', $row['cate_id'])->update(['subject_id' => $cate['subject_id']]);
+                }
+            }
+        });
+    }
 
     public function getModeList()
     {
@@ -46,6 +59,11 @@ class PaperModel extends BaseModel
         return ['NORMAL' => __('Normal'), 'HIDDEN' => __('Hidden')];
     }
 
+    public function getUsesList()
+    {
+        return ['ALL' => __('ALL'), 'ONLY_MEMBER' => __('ONLY_MEMBER'), 'ONLY_PAY' => __('ONLY_PAY')];
+    }
+
 
     public function getModeTextAttr($value, $data)
     {
@@ -58,6 +76,13 @@ class PaperModel extends BaseModel
     {
         $value = $value ? $value : ($data['status'] ?? '');
         $list  = $this->getStatusList();
+        return $list[$value] ?? '';
+    }
+
+    public function getUsesTextAttr($value, $data)
+    {
+        $value = $value ? $value : ($data['uses'] ?? '');
+        $list  = $this->getUsesList();
         return $list[$value] ?? '';
     }
 
@@ -92,6 +117,11 @@ class PaperModel extends BaseModel
     public function cates()
     {
         return $this->belongsTo(CateModel::class, 'cate_id', 'id');
+    }
+
+    public function subject()
+    {
+        return $this->belongsTo(SubjectModel::class, 'subject_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
 
     /**
@@ -144,4 +174,6 @@ class PaperModel extends BaseModel
 
         return RoomGradeModel::where('paper_id', $paper_id)->count();
     }
+
+
 }

@@ -113,6 +113,11 @@ class RoomGradeModel extends BaseModel
         //     ->where('status', RoomSignupStatus::ACCEPT);
     }
 
+    public function school()
+    {
+        return $this->belongsTo(SchoolModel::class, 'school_id', 'id', [], 'LEFT')->setEagerlyType(0);
+    }
+
     /**
      * 统计考场排名
      *
@@ -125,43 +130,12 @@ class RoomGradeModel extends BaseModel
             exam_fail('考场信息不存在');
         }
 
-        // +----------------------------------------------------------------------
-        // 已统计排名
-        // +----------------------------------------------------------------------
-        // if ($room['is_rank']) {
-        //     return [
-        //         'summary' => [
-        //             'grade_count' => $room['grade_count'],
-        //             'pass_count'  => $room['pass_count'],
-        //             'pass_rate'   => $room['pass_rate'],
-        //             'cache_time'  => date('Y-m-d H:i:s', $room['updatetime']),
-        //         ],
-        //         'list'    => \addons\exam\model\RoomGradeModel::with(
-        //             [
-        //                 'user' => BaseModel::withSimpleUser(),
-        //             ]
-        //         )
-        //             ->where('room_id', $room['id'])
-        //             ->where('paper_id', $room['paper_id'])
-        //             ->where('is_makeup', 0) // 补考不参与排名
-        //             ->group('user_id')
-        //             ->order('rank')
-        //             ->limit(10)
-        //             ->select(),
-        //     ];
-        // }
-
-        // +----------------------------------------------------------------------
-        // 未统计排名
-        // +----------------------------------------------------------------------
         $grade_count = RoomGradeModel::where('room_id', $room['id'])->where('paper_id', $room['paper_id'])->group('user_id')->count();
         $pass_count  = RoomGradeModel::where('room_id', $room['id'])->where('is_pass', 1)->group('user_id')->count();
-        $pass_rate   = round(($pass_count / $grade_count) * 100, 2) . '%';
-        // $pass_rate   = bcmul(bcdiv($pass_count, $grade_count, 4), 100, 2);
+        $pass_rate   = round(($pass_count / $grade_count) * 100, 2);
 
         $list = !$grade_count ? [] : \addons\exam\model\RoomGradeModel::with(
             [
-                // 'belongs_user' => BaseModel::withSimpleUser(),
                 'user' => BaseModel::withSimpleUser(),
             ]
         )
@@ -172,7 +146,7 @@ class RoomGradeModel extends BaseModel
             ->order('score desc, grade_time asc')
             ->select();
 
-        // 保存数据，下次无需再次统计
+        // 保存数据
         Db::transaction(function () use ($room, $grade_count, $pass_count, $pass_rate, &$list) {
             // 记录统计数据
             $room->grade_count = $grade_count;

@@ -11,6 +11,7 @@ use app\common\controller\Backend;
  */
 class MaterialQuestion extends Backend
 {
+    protected $noNeedRight = '*';
 
     /**
      * MaterialQuestionModel模型对象

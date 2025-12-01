@@ -383,4 +383,3 @@ class QuestionModel extends BaseModel
         // );
     }
 }
-

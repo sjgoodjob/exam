@@ -24,6 +24,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 $("input[name='cate_id']", form).addClass("selectpage").data("source", "exam/cate/selectpage").data("params", {"custom[kind]": "ROOM"}).data("orderBy", "sort desc");
                 $("input[name='user_id']", form).addClass("selectpage").data("source", "user/user/index").data("field", "nickname").data("orderBy", "id desc");
                 $("input[name='room_id']", form).addClass("selectpage").data("source", "exam/room/index").data("orderBy", "id desc");
+                $("input[name='school_id']", form).addClass("selectpage").data("source", "exam/school/index").data("orderBy", "id desc");
                 $("input[name='paper_id']", form).addClass("selectpage").data("source", "exam/paper/index").data("field", "title").data("orderBy", "id desc");
 
                 Form.events.cxselect(form);
@@ -50,6 +51,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user.nickname', title: __('交卷人昵称'), operate: 'LIKE'},
                         {field: 'signup1.real_name', title: __('报名人姓名'), operate: 'LIKE'},
                         {field: 'signup1.phone', title: __('报名人手机'), operate: 'LIKE'},
+                        {field: 'school_id', title: __('学校'), visible: false},
+                        {field: 'school.name', title: __('学校'), operate: false},
+                        {field: 'class_name', title: __('班级'), operate: 'LIKE'},
                         {field: 'cate_id', title: __('Cate_id'), visible: false},
                         {field: 'cate.name', title: __('Cate.name'), operate: false},
                         {field: 'room_id', title: __('Room_id'), visible: false},

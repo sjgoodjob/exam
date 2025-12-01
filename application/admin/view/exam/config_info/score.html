@@ -1,0 +1,45 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="panel panel-default">
+        <div class="panel-heading">积分得分设置</div>
+        <div class="panel-body">
+            {foreach name="score_types" item="vo"}
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-2">
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">{$vo.desc|htmlentities}</div>
+                            <input id="c-{$vo.val_name|htmlentities}" class="form-control" name="row[{$vo.val_name|htmlentities}]" type="number" value="{$row[$vo.val_name]|default=0}">
+                            <div class="input-group-addon">分</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">每日得分次数</div>
+                            <input id="c-{$vo.count_name|htmlentities}" class="form-control" name="row[{$vo.count_name|htmlentities}]" type="number" value="{$row[$vo.count_name]|default=1}">
+                            <div class="input-group-addon">次</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                    </div>
+                </div>
+            </div>
+            {/foreach}
+        </div>
+    </div>
+
+    <input type="hidden" name="type" value="score">
+    <input type="hidden" name="config_id" {notempty name="$config_id" }value="{$config_id|htmlentities}" {/notempty}>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}
+            </button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+
+</form>
+

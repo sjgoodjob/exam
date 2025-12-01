@@ -1,0 +1,30 @@
+<?php
+
+return [
+    'Order_no'      => '订单编号',
+    'User_id'       => '下单用户',
+    'User_name'     => '用户姓名',
+    'Phone'         => '手机号码',
+    'Address'       => '详细地址',
+    'Location'      => '坐标',
+    'Good_id'       => '兑换商品',
+    'Name'          => '商品标题',
+    'First_image'   => '商品首图',
+    'Quantity'      => '商品数量',
+    'Price'         => '兑换积分',
+    'Amount'        => '总兑换积分',
+    'Status'        => '状态',
+    'Status 0'      => '未支付',
+    'Status 10'     => '已支付',
+    'Status 20'     => '已发货',
+    'Status 30'     => '已完成',
+    'Admin_remark'  => '后台说明',
+    'Ship_remark'   => '发货说明',
+    'Ship_no'       => '发货单号',
+    'Pay_time'      => '支付时间',
+    'Ship_time'     => '发货时间',
+    'Complete_time' => '完成时间',
+    'Createtime'    => '创建时间',
+    'Updatetime'    => '更新时间',
+    'Good.name'     => '商品标题'
+];

@@ -28,6 +28,8 @@
             <li><a href="#t-page" data-toggle="tab">页面配置</a></li>
             <li><a href="#t-ad" data-toggle="tab">流量主配置</a></li>
             <li><a href="#t-wechat" data-toggle="tab">微信配置</a></li>
+            <li><a href="#t-score" data-toggle="tab">积分配置</a></li>
+            <li><a href="#t-member" data-toggle="tab">会员配置</a></li>
         </ul>
     </div>
 
@@ -52,6 +54,16 @@
             <!-- 微信配置 -->
             <div class="tab-pane fade" id="t-wechat">
                 {include file="../application/admin/view/exam/config_info/wechat.html" /}
+            </div>
+
+            <!-- 会员配置 -->
+            <div class="tab-pane fade" id="t-member">
+                {include file="../application/admin/view/exam/config_info/member.html" /}
+            </div>
+
+            <!-- 积分配置 -->
+            <div class="tab-pane fade" id="t-score">
+                {include file="../application/admin/view/exam/config_info/score.html" /}
             </div>
 
         </div>

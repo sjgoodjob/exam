@@ -13,5 +13,7 @@ return [
     'Createtime'    => '创建时间',
     'Updatetime'    => '修改时间',
     'Room.name'     => '考场标题',
-    'User.nickname' => '昵称'
+    'User.nickname' => '昵称',
+    'school_id'     => '所属学校',
+    'class_name'    => '班级',
 ];

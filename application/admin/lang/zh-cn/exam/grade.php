@@ -14,5 +14,5 @@ return [
     'Createtime'  => '创建时间',
     'Updatetime'  => '修改时间',
     'Cate.name'   => '名称',
-    'Paper.title' => '试卷名称'
+    'Paper.title' => '试卷名称',
 ];

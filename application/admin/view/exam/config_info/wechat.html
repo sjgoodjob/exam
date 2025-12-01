@@ -14,6 +14,21 @@
     </div>
   </div>
 
+  <div class="form-group">
+    <label class="control-label col-xs-12 col-sm-2">微信支付商户号:</label>
+    <div class="col-xs-12 col-sm-8">
+      <input id="c-pay_mchid" data-rule="required" class="form-control" name="row[pay_mchid]" type="text"
+             {notempty name="$row.pay_mchid" }value="{$row['pay_mchid']}" {/notempty}>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-xs-12 col-sm-2">微信支付KEY（V2）:</label>
+    <div class="col-xs-12 col-sm-8">
+      <input id="c-pay_key" data-rule="required" class="form-control" name="row[pay_key]"
+             type="text" {notempty name="$row.pay_key" }value="{$row['pay_key']}" {/notempty}>
+    </div>
+  </div>
+
   <input type="hidden" name="type" value="wx">
   <div class="form-group layer-footer">
     <label class="control-label col-xs-12 col-sm-2"></label>

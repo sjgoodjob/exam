@@ -1,0 +1,113 @@
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            form: {
+                user_name: {
+                    status: 1,
+                    size: 30,
+                    color: '#000000',
+                    x: 200,
+                    y: 300
+                },
+                score: {
+                    status: 1,
+                    size: 30,
+                    color: '#000000',
+                    x: 200,
+                    y: 400
+                }
+            }
+        },
+        created() {
+            // this.getForm()
+            this.initData();
+            this.setFieldConfig();
+            this.onPreview();
+        },
+        methods: {
+            initData() {
+                let field_config = $('#field_config').val();
+                if (field_config) {
+                  if (field_config = JSON.parse(field_config)) {
+                    this.form = field_config;
+                  }
+                }
+            },
+
+            setFieldConfig() {
+              $('#field_config').val(JSON.stringify(this.form));
+            },
+
+            handleChange(e) {
+                console.log('handleChange', e);
+                this.onPreview();
+            },
+
+            onPreview() {
+                // this.handleChange();
+                let image = $('#c-image').val();
+                let user_name = this.form.user_name;
+                let score = this.form.score;
+
+                if (!image) {
+                    this.warnTips('请先上传证书模板');
+                    return;
+                }
+                if (!user_name.size || user_name.size < 1) {
+                    this.warnTips('姓名的字体大小必须大于0');
+                    return;
+                }
+                if (!score.size || score.size < 1) {
+                    this.warnTips('分数的字体大小必须大于0');
+                    return;
+                }
+
+                let preview_url = $('#preview_url').val();
+                $('#iframe_cert_image').attr('src', preview_url + '?image=' + image + '&user_name=' + encodeURIComponent(JSON.stringify(user_name)) + '&score=' + encodeURIComponent(JSON.stringify(score)));
+                this.setFieldConfig();
+            },
+
+            warnTips($msg) {
+                this.$message({
+                    message: $msg,
+                    type: 'warning'
+                });
+            },
+
+            getForm() {
+                var timer = setInterval(() => {
+                    if (faForm) {
+                        clearInterval(timer);
+                        console.log('faForm3', faForm);
+                        this.bindForm();
+                    }
+                }, 500);
+            },
+            bindForm() {
+                faForm.api.bindevent($("form[role=form]"), function(data, ret){
+                    console.log('bindevent', data, ret);
+                    if (ret.code == 1) {
+                        Fast.api.close(data);
+                    }
+                    return false;
+                });
+            },
+            changePage(e) {
+                console.log('changePage', e)
+                this.currentPage = e.target.value;
+                this.currentItem = this.pages.find(item => item.path === this.currentPage);
+
+                setTimeout(() => {
+                    if (faForm) {
+                        this.bindForm();
+                    }
+                }, 500);
+            },
+            // 验证
+            valid() {
+
+            }
+        }
+    });
+</script>

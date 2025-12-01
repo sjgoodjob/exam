@@ -1,0 +1,58 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('User_name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <label class="radio">{$row.user_name|htmlentities}</label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Phone')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <label class="radio">{$row.phone|htmlentities}</label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Address')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <label class="radio">{$row.address|htmlentities}</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <label class="radio" style="margin-right: 10px; display: inline;">{$row.name|htmlentities}</label>
+            <label class="radio" style="display: inline;">x{$row.quantity|htmlentities}件</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Ship_no')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-ship_no" data-rule="required" class="form-control" name="row[ship_no]" type="text" value="{$row.ship_no|htmlentities}">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Ship_remark')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-ship_remark" data-rule="required" class="form-control" name="row[ship_remark]" cols="30" rows="5" maxlength="450">{$row.ship_remark|htmlentities}</textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Admin_remark')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-admin_remark" name="row[admin_remark]" class="form-control" cols="30" rows="5" maxlength="450">{$row.admin_remark|htmlentities}</textarea>
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

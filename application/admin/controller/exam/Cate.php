@@ -3,6 +3,7 @@
 namespace app\admin\controller\exam;
 
 use app\admin\model\exam\CateModel;
+use app\admin\model\exam\SubjectModel;
 use app\common\controller\Backend;
 use fast\Tree;
 use think\Db;
@@ -27,7 +28,11 @@ class Cate extends Backend
     {
         parent::_initialize();
         $this->model = new \app\admin\model\exam\CateModel;
-        $query       = $this->model->order('sort desc,id desc');
+        $query       = \app\admin\model\exam\CateModel::with([
+            'subject' => function ($query) {
+                $query->field('id,name');
+            }
+        ])->order('sort desc,id desc');
 
         $kind = input('kind/s', 'all');
         if ($kind != 'all') {
@@ -40,6 +45,10 @@ class Cate extends Backend
 
         $this->view->assign("kindList", $this->model->getKindList());
         $this->view->assign("parentList", $this->parentlist);
+        $this->view->assign("usesList", $this->model->getUsesList());
+        $this->view->assign("isFreeList", $this->model->getIsFreeList());
+        $this->view->assign("isLookList", $this->model->getIsLookList());
+        $this->view->assign("statusList", $this->model->getStatusList());
     }
 
     public function import()
@@ -138,7 +147,7 @@ class Cate extends Backend
         if ($cate_ids = $this->request->request("keyValue", "")) {
             $list = CateModel::whereIn('id', $cate_ids)->select();
         } else {
-            $ids  = Db::name('exam_question')->group('cate_id')->field('cate_id')->select();
+            $ids  = Db::name('exam_question')->whereNull('deletetime')->group('cate_id')->field('cate_id')->select();
             $list = $ids ? CateModel::whereIn('id', array_column($ids, 'cate_id'))->select() : [];
             // $list = $ids ? CateModel::whereIn('id', array_column($ids, 'cate_id'))->select() : [];
         }
@@ -160,6 +169,7 @@ class Cate extends Backend
                     $params[$this->dataLimitField] = $this->auth->id;
                 }
                 $result = false;
+                $this->validParams($params);
                 Db::startTrans();
                 try {
                     //是否采用模型验证
@@ -169,7 +179,6 @@ class Cate extends Backend
                         $this->model->validateFailException(true)->validate($validate);
                     }
 
-                    $this->setLevel($params);
                     $result = $this->model->allowField(true)->save($params);
                     Db::commit();
                 } catch (ValidateException $e) {
@@ -213,6 +222,7 @@ class Cate extends Backend
             if ($params) {
                 $params = $this->preExcludeFields($params);
                 $result = false;
+                $this->validParams($params, $row);
                 Db::startTrans();
                 try {
                     //是否采用模型验证
@@ -222,7 +232,23 @@ class Cate extends Backend
                         $row->validateFailException(true)->validate($validate);
                     }
 
-                    $this->setLevel($params, $row);
+                    // 子级跟随父级的付费设置
+                    $child_ids = CateModel::getChildId($ids);
+                    if ($child_ids) {
+                        $data = [
+                            'uses'    => $params['uses'],
+                            'is_free' => $params['is_free']
+                        ];
+
+                        // 付费设置
+                        if ($params['is_free'] != 1) {
+                            $data['price'] = $params['price'];
+                            $data['days']  = $params['days'];
+                        }
+
+                        CateModel::whereIn('id', $child_ids)->update($data);
+                    }
+
                     $result = $row->allowField(true)->save($params);
                     Db::commit();
                 } catch (ValidateException $e) {
@@ -248,13 +274,29 @@ class Cate extends Backend
     }
 
     /**
-     * 设置层级
+     * 验证参数
      * @param $params
      */
-    protected function setLevel(&$params, $row = null)
+    protected function validParams(&$params, $row = null)
     {
+        $params['price'] = $params['price'] ?? 0;
+        if ($params['price'] < 0) {
+            $this->error('开通价格不能小于0');
+        }
+
+        if (!empty($params['subject_id'])) {
+            $subject = SubjectModel::get($params['subject_id']);
+            if (!$subject) {
+                $this->error('所属科目数据不存在');
+            }
+            if (!$subject['parent_id']) {
+                $this->error('所属科目必须是二级科目');
+            }
+        }
+
         $params['parent_id'] = $params['parent_id'] ?? 0;
 
+        // 设置层级
         if (!$params['parent_id']) {
             $params['level'] = 1;
         } else {
@@ -263,14 +305,14 @@ class Cate extends Backend
             // 编辑时
             if ($row) {
                 if ($params['parent_id'] == $row['id']) {
-                    throw new \Exception('不能将当前分类设置为父级分类');
+                    $this->error('不能将当前分类设置为父级分类');
                 }
                 if ($parent['kind'] != $params['kind']) {
-                    throw new \Exception('不能将当前分类设置为其他种类的下级');
+                    $this->error('不能将当前分类设置为其他种类的下级');
                 }
                 $child_ids = CateModel::where('parent_id', $row['id'])->column('id');
                 if (in_array($params['parent_id'], $child_ids)) {
-                    throw new \Exception('不能将当前分类的子级设置为当前分类的父级');
+                    $this->error('不能将当前分类的子级设置为当前分类的父级');
                 }
             }
 
@@ -279,7 +321,7 @@ class Cate extends Backend
             } else if ($parent['level'] == 2) {
                 $params['level'] = 3;
             } else {
-                throw new \Exception('错误：最多添加3级分类，请重新选择父级类别');
+                $this->error('错误：最多添加3级分类，请重新选择父级类别');
             }
         }
     }

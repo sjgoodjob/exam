@@ -4,7 +4,7 @@
         <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
         <div class="col-xs-12 col-sm-8">
             <input id="c-name" data-rule="required" class="form-control" name="row[name]" type="text"
-                   value="{$row.name|htmlentities}">
+                value="{$row.name|htmlentities}">
         </div>
     </div>
     <div class="form-group">
@@ -20,12 +20,19 @@
         </div>
     </div>
     <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('subject_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-subject_id" data-source="exam/subject/selectpage" data-params='{"custom[status]":"1","isTree": true}' class="form-control selectpage" name="row[subject_id]" type="text" value="{$row.subject_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Parent_id')}:</label>
         <div class="col-xs-12 col-sm-8">
             <select id="c-parent_id" data-rule="required" class="form-control selectpicker" name="row[parent_id]">
                 <option value="0">无</option>
                 {foreach name="parentList" item="vo"}
-                <option data-type="{$vo.kind|htmlentities}" value="{$vo.id|htmlentities}" {eq name="vo.id" value="$row.parent_id"}selected{/eq}>{$vo.name|htmlentities}</option>
+                <option data-type="{$vo.kind|htmlentities}" value="{$vo.id|htmlentities}" {eq name="vo.id" value="$row.parent_id" }selected{/eq}>
+                    {$vo.name|htmlentities}</option>
                 {/foreach}
             </select>
         </div>
@@ -44,11 +51,69 @@
             <ul class="row list-inline plupload-preview" id="p-icon"></ul>
         </div>
     </div>-->
+    <div class="form-group uses">
+        <label class="control-label col-xs-12 col-sm-2">{:__('uses')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="radio">
+                {foreach name="usesList" item="vo"}
+                <label for="row[uses]-{$key|htmlentities}">
+                    <input id="row[uses]-{$key|htmlentities}" name="row[uses]" type="radio" value="{$key|htmlentities}" {in name="key"
+                        value="$row.uses" }checked{/in} />
+                    {$vo|htmlentities}</label>
+                {/foreach}
+            </div>
+            <p class="help-block">* 子级将跟随父级设置</p>
+        </div>
+    </div>
+
+    <div class="form-group is_free" data-favisible="kind=QUESTION">
+        <label class="control-label col-xs-12 col-sm-2">{:__('is_free')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="radio">
+                {foreach name="isFreeList" item="vo"}
+                <label for="row[is_free]-{$key|htmlentities}">
+                    <input id="row[is_free]-{$key|htmlentities}" name="row[is_free]" type="radio" value="{$key|htmlentities}" {in name="key"
+                        value="$row.is_free" }checked{/in} />
+                    {$vo|htmlentities}</label>
+                {/foreach}
+            </div>
+            <p class="help-block">* 子级将跟随父级设置</p>
+        </div>
+    </div>
+
+    <div class="form-group" data-favisible="is_free=0">
+        <label class="control-label col-xs-12 col-sm-2">{:__('price')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-price" class="form-control" name="row[price]" type="number" min="0" step="0.01" value="{$row.price|htmlentities}">
+        </div>
+    </div>
+
+    <div class="form-group" data-favisible="is_free=0">
+        <label class="control-label col-xs-12 col-sm-2">{:__('days')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-days" class="form-control" name="row[days]" type="number" min="0" placeholder="支付后有效天数，填0表示永久" value="{$row.days|htmlentities}">
+        </div>
+    </div>
+
+    <div class="form-group status">
+        <label class="control-label col-xs-12 col-sm-2">{:__('status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="radio">
+                {foreach name="statusList" item="vo"}
+                <label for="row[status]-{$key|htmlentities}">
+                    <input id="row[status]-{$key|htmlentities}" name="row[status]" type="radio" value="{$key|htmlentities}" {in name="key"
+                        value="$row.status" }checked{/in} />
+                    {$vo|htmlentities}</label>
+                {/foreach}
+            </div>
+        </div>
+    </div>
+
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Sort')}:</label>
         <div class="col-xs-12 col-sm-8">
             <input id="c-sort" data-rule="required" class="form-control" name="row[sort]" type="number"
-                   value="{$row.sort|htmlentities}">
+                value="{$row.sort|htmlentities}">
         </div>
     </div>
     <div class="form-group">
@@ -56,12 +121,12 @@
         <div class="col-xs-12 col-sm-8">
             <textarea id="c-remark" class="form-control editor" name="row[remark]">{$row.remark|htmlentities}</textarea>
         </div>
-    <div class="form-group layer-footer">
-        <label class="control-label col-xs-12 col-sm-2"></label>
-        <div class="col-xs-12 col-sm-8">
-            <input type="hidden" id="id" value="{$row.id|htmlentities}">
-            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
-            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        <div class="form-group layer-footer">
+            <label class="control-label col-xs-12 col-sm-2"></label>
+            <div class="col-xs-12 col-sm-8">
+                <input type="hidden" id="id" value="{$row.id|htmlentities}">
+                <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+                <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+            </div>
         </div>
-    </div>
 </form>

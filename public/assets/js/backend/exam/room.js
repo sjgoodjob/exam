@@ -23,7 +23,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                 $("input[name='cate_id']", form).addClass("selectpage").data("source", "exam/cate/selectpage").data("params", {"custom[kind]": "ROOM"}).data("orderBy", "sort desc");
                 $("input[name='paper_id']", form).addClass("selectpage").data("source", "exam/paper/index").data("field", "title").data("orderBy", "id desc");
-
+                $("input[name='subject_id']", form).addClass("selectpage").data("source", "exam/subject/index").data("params", {"isTree": "true"}).data("orderBy", "weigh desc");
 
                 Form.events.cxselect(form);
                 Form.events.selectpage(form);
@@ -56,6 +56,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             //     return value.length > 20 ? value.substr(0, 20) + '...' : value;
                             // }
                         },
+                        {field: 'subject_id', title: __('Subject_id'), autocomplete: false, visible: false},
+                        {field: 'subject.name', title: __('Subject_id'), operate: false},
                         {field: 'cate_id', title: __('Cate_id'), visible: false},
                         {field: 'paper_id', title: __('Paper_id'), visible: false},
                         {field: 'cate.name', title: __('Cate.name'), operate: 'LIKE'},
@@ -81,6 +83,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                 return value > 0 ? value : '不补考';
                             }
                         },
+                        {field: 'qrcode_h5', title: __('qrcode_h5'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
                         // {field: 'is_rank', title: '排名', searchList: {"0":'未排名',"1":'已排名'}, formatter: Table.api.formatter.normal},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         // {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
@@ -127,6 +130,17 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     classname: 'btn btn-xs btn-warning btn-dialog btn-grade',
                                     url: function (row) {
                                         return 'exam/room_grade/index?room_id=' + row.id
+                                    },
+                                },
+
+                                {
+                                    name: 'rank',
+                                    text: '刷新排行榜',
+                                    title: '刷新排行榜',
+                                    icon: 'fa fa-list-ol',
+                                    classname: 'btn btn-xs btn-success btn-ajax btn-rank',
+                                    url: function (row) {
+                                        return 'exam/room_grade/rank?room_id=' + row.id
                                     },
                                 },
 
@@ -226,6 +240,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
         },
         edit: function () {
             Controller.api.bindevent();
+            Controller.api.bindCreateQrcode();
         },
         api: {
             bindevent: function () {
@@ -269,6 +284,35 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     console.log('is_makeup', $(this).val())
                 });
                 $("input[name='row[is_makeup]']:checked").trigger('change');
+            },
+
+            // 绑定生成二维码事件
+            bindCreateQrcode: function () {
+                $(document).on("click", "#create-qrcode_h5", function(){
+                    var room_id = $('#room_id').val();
+                    console.log('createQrcodeH5 room_id', room_id)
+                    if (room_id) {
+                        Fast.api.ajax({
+                            url: 'exam/room/createH5Qrcode',
+                            data: {
+                                room_id: room_id
+                            }
+                        }, function (data, ret) {
+                            console.log('data ret', data, ret)
+                            $('#c-qrcode_h5').val(data);
+                            $('#c-qrcode_h5').trigger('change');
+                            return false;
+                        })
+                        // var timestamp = Controller.api.getTimestamp();
+                        // var url = 'http://' + window.location.host + '/exam/room/index?id=' + room_id + '&timestamp=' + timestamp;
+                        // var qrcode = new QRCode(document.getElementById("qrcode_h5"), {
+                        //     width : 200,
+                        //     height : 200,
+                        //     text : url
+                        // });
+                        // $('#qrcode_h5').show();
+                      }
+                });
             },
 
             // 时间戳

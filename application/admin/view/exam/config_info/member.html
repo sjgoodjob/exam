@@ -1,0 +1,100 @@
+<form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">广告设置:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="radio">
+                <label for="row[member_show_ad]-1">
+                    <input id="row[member_show_ad]-1" name="row[member_show_ad]" type="radio" value="1" {notempty name="$row.member_show_ad" }{eq name="$row.member_show_ad" value="1" }checked{/eq}{else/}checked{/notempty}/>
+                    显示
+                </label>
+
+                <label for="row[member_show_ad]-0">
+                    <input id="row[member_show_ad]-0" name="row[member_show_ad]" type="radio" value="0" {notempty name="$row.member_show_ad" }{eq name="$row.member_show_ad" value="0" }checked{/eq}{else/}checked{/notempty}/>
+                    隐藏
+                </label>
+            </div>
+            <!--<p style="color: orange; font-size: small;">* 修改页面风格后请刷新或重新进入小程序查看效果</p>-->
+        </div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label col-xs-12 col-sm-2">错题查看:</label>
+      <div class="col-xs-12 col-sm-8">
+        <div class="radio">
+          <label for="row[member_show_wrong]-1">
+            <input id="row[member_show_wrong]-1" name="row[member_show_wrong]" type="radio" value="1" {notempty name="$row.member_show_wrong" }{eq name="$row.member_show_wrong" value="1" }checked{/eq}{else/}checked{/notempty}/>
+            仅会员可查看
+          </label>
+
+          <label for="row[member_show_wrong]-0">
+            <input id="row[member_show_wrong]-0" name="row[member_show_wrong]" type="radio" value="0" {notempty name="$row.member_show_wrong" }{eq name="$row.member_show_wrong" value="0" }checked{/eq}{else/}checked{/notempty}/>
+            所有用户可查看
+          </label>
+        </div>
+        <!--<p style="color: orange; font-size: small;">* 修改页面风格后请刷新或重新进入小程序查看效果</p>-->
+      </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">会员协议:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-explain" class="form-control editor" name="row[member_protocol]">{$row.member_protocol|default=''}</textarea>
+        </div>
+    </div>
+
+    <!--<div class="panel panel-default">
+        <div class="panel-heading">会员开通费用设置</div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">月卡会员:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-member_vip_month_fee" class="form-control" name="row[member_vip_month_fee]" type="number" step="0.01" value="{$row.member_vip_month_fee|default='0.00'}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-member_vip_month_open" name="row[member_vip_month_open]" type="hidden" value="{$row.member_vip_month_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-member_vip_month_open" data-input-id="c-member_vip_month_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['member_vip_month_open']) || !$row['member_vip_month_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">年卡会员:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-member_vip_year_fee" class="form-control" name="row[member_vip_year_fee]" type="number" step="0.01" value="{$row.member_vip_year_fee|default='0.00'}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-member_vip_year_open" name="row[member_vip_year_open]" type="hidden" value="{$row.member_vip_year_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-member_vip_year_open" data-input-id="c-member_vip_year_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['member_vip_year_open']) || !$row['member_vip_year_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-3">终身会员:</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input id="c-member_vip_life_fee" class="form-control" name="row[member_vip_life_fee]" type="number" step="0.01" value="{$row.member_vip_life_fee|default='0.00'}">
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <input id="c-member_vip_life_open" name="row[member_vip_life_open]" type="hidden" value="{$row.member_vip_life_open|default=0}">
+                    <a href="javascript:;" data-toggle="switcher" class="btn-member_vip_life_open" data-input-id="c-member_vip_life_open" data-yes="1" data-no="0" >
+                        <i class="fa fa-toggle-on text-success {if condition="!isset($row['member_vip_life_open']) || !$row['member_vip_life_open']"}fa-flip-horizontal text-gray{/if} fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+    <input type="hidden" name="type" value="member">
+    <input type="hidden" name="config_id" {notempty name="$config_id" }value="{$config_id|htmlentities}" {/notempty}>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}
+            </button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+
+</form>
+

@@ -56,4 +56,9 @@ class RoomSignupModel extends BaseModel
     {
         return $this->belongsTo(User::class, 'user_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
+
+    public function school()
+    {
+        return $this->belongsTo(SchoolModel::class, 'school_id', 'id', [], 'LEFT')->setEagerlyType(0);
+    }
 }

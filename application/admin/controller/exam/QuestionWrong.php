@@ -11,6 +11,7 @@ use app\common\controller\Backend;
  */
 class QuestionWrong extends Backend
 {
+    protected $noNeedRight = ['*'];
 
     /**
      * QuestionWrongModel模型对象

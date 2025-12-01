@@ -1,0 +1,75 @@
+
+
+<el-form :inline="true" :model="form">
+    <el-row>
+        <el-alert
+            title="姓名设置"
+            type="success"
+            :closable="false"
+            center>
+        </el-alert>
+        <el-form-item label="开关">
+            <el-switch
+              v-model="form.user_name.status"
+              active-color="#13ce66"
+              :active-value="1"
+              :inactive-value="0"
+              @change="handleChange">
+            </el-switch>
+        </el-form-item>
+        <el-form-item label="大小">
+            <el-input-number v-model="form.user_name.size" controls-position="right" @change="handleChange" :min="1" style="width: 100px;"></el-input-number>
+            <span>px</span>
+        </el-form-item>
+        <el-form-item label="颜色">
+            <el-color-picker v-model="form.user_name.color" @change="handleChange" @active-change="handleChange"></el-color-picker>
+        </el-form-item>
+        <el-form-item label="位置">
+            <span>x</span>
+            <el-input-number v-model="form.user_name.x" controls-position="right" @change="handleChange" :min="1" style="width: 100px;"></el-input-number>
+            <span>y</span>
+            <el-input-number v-model="form.user_name.y" controls-position="right" @change="handleChange" :min="1" style="width: 100px;"></el-input-number>
+        </el-form-item>
+    </el-row>
+
+    <el-row>
+        <el-alert
+            title="分数设置"
+            type="success"
+            :closable="false"
+            center>
+        </el-alert>
+        <el-form-item label="开关">
+          <el-switch
+            v-model="form.score.status"
+            active-color="#13ce66"
+            :active-value="1"
+            :inactive-value="0"
+            @change="handleChange">
+          </el-switch>
+        </el-form-item>
+        <el-form-item label="大小">
+            <el-input-number v-model="form.score.size" controls-position="right" @change="handleChange" :min="1" style="width: 100px;"></el-input-number>
+            <span>px</span>
+        </el-form-item>
+        <el-form-item label="颜色">
+            <el-color-picker v-model="form.score.color" @change="handleChange" @active-change="handleChange"></el-color-picker>
+        </el-form-item>
+        <el-form-item label="位置">
+            <span>x</span>
+            <el-input-number v-model="form.score.x" controls-position="right" @change="handleChange" :min="1" style="width: 100px;"></el-input-number>
+            <span>y</span>
+            <el-input-number v-model="form.score.y" controls-position="right" @change="handleChange" :min="1" style="width: 100px;"></el-input-number>
+        </el-form-item>
+    </el-row>
+
+    <!--<el-row style="text-align: center;">
+        <el-form-item>
+            <el-button type="primary" @click="onPreview">预览</el-button>
+        </el-form-item>
+    </el-row>-->
+</el-form>
+
+<input type="hidden" name="row[field_config]" id="field_config" value='{$row.field_config|default=''}'>
+<input type="hidden" id="preview_url" value="{$preview_url|htmlentities}">
+

@@ -28,11 +28,6 @@ class UserInfoModel extends BaseModel
             'status',
         ];
 
-    // protected $type = [
-    //     'default_cate_ids'   => 'array',
-    //     'default_cate_names' => 'array',
-    // ];
-
 
     public function getTypeList()
     {
@@ -96,5 +91,24 @@ class UserInfoModel extends BaseModel
     public function memberConfig()
     {
         return $this->belongsTo(MemberConfigModel::class, 'member_config_id', 'id', [], 'LEFT')->setEagerlyType(0);
+    }
+
+    /**
+     * 隐藏手机号码
+     * @param $mobile
+     * @return string
+     */
+    public static function hideUserMobile($mobile)
+    {
+        if (!$mobile) {
+            return '';
+        }
+        $mobile = (string)$mobile;
+        $len    = strlen($mobile);
+        if ($len == 11) {
+            return substr($mobile, 0, 3) . '****' . substr($mobile, 7, 4);
+        } else {
+            return $mobile;
+        }
     }
 }

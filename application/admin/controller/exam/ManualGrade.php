@@ -11,6 +11,7 @@ use app\common\controller\Backend;
  */
 class ManualGrade extends Backend
 {
+    protected $noNeedRight = '*';
 
     /**
      * ManualGradeModel模型对象

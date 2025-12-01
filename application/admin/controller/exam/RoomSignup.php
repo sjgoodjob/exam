@@ -4,8 +4,10 @@ namespace app\admin\controller\exam;
 
 use addons\exam\enum\RoomSignupStatus;
 use app\admin\model\exam\RoomModel;
+use app\admin\model\exam\UserInfoModel;
 use app\common\controller\Backend;
 use think\Db;
+use think\Env;
 use think\exception\PDOException;
 use think\exception\ValidateException;
 
@@ -21,6 +23,8 @@ class RoomSignup extends Backend
      * @var \app\admin\model\exam\RoomSignupModel
      */
     protected $model = null;
+
+    protected $selectpageFields = ['id', 'user_id', 'real_name', 'school_id', 'class_name'];
 
     public function _initialize()
     {
@@ -55,7 +59,7 @@ class RoomSignup extends Backend
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
 
             $list = $this->model
-                ->with(['room', 'user'])
+                ->with(['room', 'user', 'school'])
                 ->where($where)
                 ->order($sort, $order)
                 ->paginate($limit);
@@ -63,10 +67,24 @@ class RoomSignup extends Backend
             foreach ($list as $row) {
 
                 $row->getRelation('room')->visible(['name']);
+                $row->getRelation('school')->visible(['name']);
                 $row->getRelation('user')->visible(['nickname']);
             }
 
-            $result = array("total" => $list->total(), "rows" => $list->items());
+            // $result = array("total" => $list->total(), "rows" => $list->items());
+
+            $total = $list->total();
+            $rows  = $list->items();
+
+            if (Env::get('app.preview', false)) {
+                foreach ($rows as &$row) {
+                    if (!empty($row['phone'])) {
+                        $row['phone'] = UserInfoModel::hideUserMobile($row['phone']);
+                    }
+                }
+            }
+
+            $result = array("total" => $total, "rows" => $rows);
 
             return json($result);
         }

@@ -3,6 +3,10 @@
 namespace app\admin\controller\exam;
 
 use addons\exam\enum\RoomMode;
+use app\admin\model\exam\CertConfigModel;
+use app\admin\model\exam\CertTemplateModel;
+use app\admin\model\exam\ConfigInfoModel;
+use app\admin\model\exam\RoomModel;
 use app\common\controller\Backend;
 use think\Db;
 use think\exception\PDOException;
@@ -10,6 +14,7 @@ use think\exception\ValidateException;
 
 /**
  * 考试考场
+ *
  * @icon fa fa-circle-o
  */
 class Room extends Backend
@@ -17,9 +22,12 @@ class Room extends Backend
 
     /**
      * RoomModel模型对象
+     *
      * @var \app\admin\model\exam\RoomModel
      */
     protected $model = null;
+
+    protected $noNeedRight = ['createH5Qrcode'];
 
     public function _initialize()
     {
@@ -28,6 +36,7 @@ class Room extends Backend
         $this->view->assign("statusList", $this->model->getStatusList());
         $this->view->assign("signupModeList", $this->model->getSignupModeList());
         $this->view->assign("isMakeupList", $this->model->getIsMakeupList());
+        $this->view->assign("isCreateQrcodeH5List", $this->model->getIsCreateQrcodeH5List());
     }
 
 
@@ -53,10 +62,10 @@ class Room extends Backend
             if ($this->request->request('keyField')) {
                 return $this->selectpage();
             }
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            [$where, $sort, $order, $offset, $limit] = $this->buildparams();
 
             $list = $this->model
-                ->with(['paper', 'cate'])
+                ->with(['paper', 'cate', 'subject'])
                 ->where($where)
                 ->order($sort, $order)
                 ->paginate($limit);
@@ -67,7 +76,7 @@ class Room extends Backend
                 $row->getRelation('cate')->visible(['name']);
             }
 
-            $result = array("total" => $list->total(), "rows" => $list->items());
+            $result = ["total" => $list->total(), "rows" => $list->items()];
 
             return json($result);
         }
@@ -112,6 +121,11 @@ class Room extends Backend
                     $this->error($e->getMessage());
                 }
                 if ($result !== false) {
+                    // 创建H5二维码
+                    if (!empty($params['is_create_qrcode_h5'])) {
+                        $qrcode_url = RoomModel::createH5Qrcode($this->model->id);
+                        $this->model->save(['qrcode_h5' => $qrcode_url]);
+                    }
                     $this->success();
                 } else {
                     $this->error(__('No rows were inserted'));
@@ -166,6 +180,12 @@ class Room extends Backend
                     $this->error($e->getMessage());
                 }
                 if ($result !== false) {
+                    // 创建H5二维码
+                    // if ($params['is_create_qrcode_h5']) {
+                    //     $qrcode_url = RoomModel::createH5Qrcode($row->id);
+                    //     $row->save(['qrcode_h5' => $qrcode_url]);
+                    // }
+
                     $this->success();
                 } else {
                     $this->error(__('No rows were updated'));
@@ -173,12 +193,16 @@ class Room extends Backend
             }
             $this->error(__('Parameter %s can not be empty', ''));
         }
+
+        $h5_url = ConfigInfoModel::getH5Url();
+        $this->view->assign("h5_url", $h5_url);
         $this->view->assign("row", $row);
         return $this->view->fetch();
     }
 
     /**
      * 验证提交数据
+     *
      * @param $params
      * @return void
      */
@@ -206,5 +230,31 @@ class Room extends Backend
             // 不补考，补考次数默认0
             $params['makeup_count'] = 0;
         }
+
+        if (!empty($params['cert_config_id'])) {
+            $cert_config = CertConfigModel::get([
+                'id'     => $params['cert_config_id'],
+                'status' => '1',
+            ]);
+            if (!$cert_config) {
+                throw new \Exception('不存在或已禁用，请重新选择');
+            }
+            if (CertTemplateModel::where('cert_config_id', $cert_config['id'])->where('status', '1')->count() <= 0) {
+                throw new \Exception("证书配置【{$cert_config['name']}】未配置证书模板，请先添加证书模板");
+            }
+        }
+    }
+
+    /**
+     * 生成二维码
+     */
+    public function createH5Qrcode()
+    {
+        if (!$room_id = input('room_id/d', 0)) {
+            $this->error('参数错误');
+        }
+
+        $qrcode_url = RoomModel::createH5Qrcode($room_id);
+        $this->success('生成二维码成功', '', $qrcode_url);
     }
 }

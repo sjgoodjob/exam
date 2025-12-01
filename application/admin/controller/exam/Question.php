@@ -341,6 +341,7 @@ class Question extends Backend
                     'H',
                 ];
 
+                $time = time();
                 for ($currentRow = 2; $currentRow <= $allRow; $currentRow++) {
                     $values = [];
                     for ($currentColumn = 1; $currentColumn <= $maxColumnNumber; $currentColumn++) {
@@ -436,9 +437,20 @@ class Question extends Backend
                     $row['answer'] = str_replace(' ', '', $row['answer']);
                     $row['answer'] = str_replace('，', ',', $row['answer']);
 
-                    if (!$row['answer'] || ($row['kind'] == 'MULTI' && !strpos($row['answer'], ','))) {
+                    if ($row['answer'] == '') {
                         throw new \Exception('题目【' . $row['title'] . '】答案格式有误');
                     }
+                    if ($row['kind'] == 'MULTI') {
+                        if (!strpos($row['answer'], ',')) {
+                            $multi_answer = str_split($row['answer']);
+                            if (!$multi_answer) {
+                                throw new \Exception('题目【' . $row['title'] . '】答案格式有误');
+                            }
+
+                            $row['answer'] = $multi_answer;
+                        }
+                    }
+
                     // 填空题
                     if ($row['kind'] == 'FILL') {
                         $row['answer'] = explode('|||', $row['answer']);
@@ -481,6 +493,7 @@ class Question extends Backend
 
                     $row['options_json'] = json_encode($options, JSON_UNESCAPED_UNICODE);
                     $row['cate_id']      = $cate;
+                    $row['createtime']   = $time;
                     // $row['exam_type_id'] = $exam_type;
                     $insert[] = $row;
                 }
@@ -826,7 +839,7 @@ class Question extends Backend
      */
     protected function optionsImage(&$data)
     {
-        $options_img = $data['options_img'] ?? null;
+        $options_img = $data['options_img'] ?? [];
         $options_img = json_decode($options_img, true);
         if ($options_img) {
             foreach ($options_img as &$item) {
@@ -836,6 +849,7 @@ class Question extends Backend
             }
         }
         $data['options_img'] = json_encode($options_img);
+        $data['options_img'] = $data['options_img'] == 'null' ? [] : $data['options_img'];
     }
 
     /**
@@ -888,11 +902,10 @@ class Question extends Backend
 
 
     }
-     public function ai()
+    public function ai()
     {
         return $this->view->fetch(); // 或 return view();
     }
-
 
     public function doAIGenerate()
     {
@@ -1024,5 +1037,4 @@ class Question extends Backend
         $this->success("生成成功",null, ['questions' => $data]);
     }
     
-
 }

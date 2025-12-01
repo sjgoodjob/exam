@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'Id'                   => 'ID',
+    'Name'                 => '名称',
+    'Price'                => '价格',
+    'Days'                 => '天数',
+    'Tag'                  => '标签',
+    'Desc'                 => '说明',
+    'Status'               => '状态',
+    'Status 0'             => '关闭',
+    'Status 1'             => '开启',
+    'Createtime'           => '创建时间',
+    'Updatetime'           => '更新时间',
+    'Deletetime'           => '删除时间',
+    'uses'                 => '可用题库',
+    'uses all'             => '所有题库',
+    'uses cate'            => '部分题库',
+    'uses subject'         => '部分科目',
+    'cate_ids'             => '可用题库',
+    'paper_uses'           => '可用试卷分类',
+    'paper_uses all'       => '所有试卷分类',
+    'paper_uses part_cate' => '部分试卷分类',
+    'paper_cate_ids'       => '可用试卷分类',
+];

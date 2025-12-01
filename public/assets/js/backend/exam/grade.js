@@ -19,7 +19,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             table.on('post-common-search.bs.table', function (event, table) {
                 let form = $("form", table.$commonsearch);
 
-                $("input[name='cate_id']", form).addClass("selectpage").data("source", "exam/cate/selectpage").data("params", {"custom[kind]": "QUESTION"}).data("orderBy", "sort desc");
+                $("input[name='cate_id']", form).addClass("selectpage").data("source", "exam/cate/selectpage").data("params", {"custom[kind]": "PAPER"}).data("orderBy", "sort desc");
                 $("input[name='user_id']", form).addClass("selectpage").data("source", "user/user/index").data("field", "nickname");
                 $("input[name='paper_id']", form).addClass("selectpage").data("source", "exam/paper/index").data("field", "title");
 

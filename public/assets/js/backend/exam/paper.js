@@ -22,9 +22,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             //在普通搜索渲染后
             table.on('post-common-search.bs.table', function (event, table) {
                 let form = $("form", table.$commonsearch);
-                $("input[name='cate_id']", form).addClass("selectpage").data("source", "exam/cate/index").data("params", {"custom[kind]": "PAPER", "custom[isTree]": true,}).data("orderBy", "sort desc");
-                // $("input[name='exam_type_id']", form).addClass("selectpage").data("source", "exam_type/index").data("orderBy", "sort desc");
-
+                // , "isTree": true,
+                $("input[name='cate_id']", form).addClass("selectpage").data("source", "exam/cate/index").data("params", {"custom[kind]": "PAPER"}).data("orderBy", "sort desc");
+                $("input[name='subject_id']", form).addClass("selectpage").data("source", "exam/subject/index").data("params", {"isTree": "true"}).data("orderBy", "weigh desc");
                 Form.events.cxselect(form);
                 Form.events.selectpage(form);
             });
@@ -51,8 +51,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id'), operate: false},
+                        {field: 'subject_id', title: __('Subject_id'), autocomplete: false, visible: false},
+                        {field: 'subject.name', title: __('Subject_id'), operate: false},
                         {field: 'cate_id', title: __('Cate_id'), autocomplete: false, visible: false},
                         {field: 'cate.name', title: __('Cate_id'), operate: false},
+                        {field: 'cover_image', title: __('Cover_image'), events: Table.api.events.image, formatter: Table.api.formatter.image, operate: false},
                         {field: 'title', title: __('Title'), autocomplete: false, operate: 'LIKE'},
                         // {field: 'configs', title: __('Configs'), operate: 'LIKE'},
                         {field: 'quantity', title: __('Quantity'), operate: false},
@@ -90,6 +93,22 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             formatter: Table.api.formatter.datetime
                         },
                         {field: 'is_only_room', title: __('Is_only_room'), searchList: {"1":__('Yes'),"0":__('No')}, formatter: Table.api.formatter.toggle},
+                        {
+                            field: 'uses',
+                            title: __('uses'),
+                            searchList: {"ONLY_PAY": __('ONLY_PAY'),"ALL": __('ALL'),"ONLY_MEMBER": __('ONLY_MEMBER'), },
+                            formatter: Table.api.formatter.status
+                        },
+                        {field: 'price', title: __('price'), operate: false, formatter: Controller.api.formatPrice},
+                        {field: 'member_price', title: __('member_price'), operate: false, formatter: Controller.api.formatPrice},
+                        {
+                          field: 'pay_effect_days', title: __('pay_effect_days'), operate: false, formatter: function (value) {
+                            if (value) {
+                              return value + '天';
+                            }
+                            return '无限制';
+                          }
+                        },
                         {
                             field: 'status',
                             title: __('Status'),
@@ -184,6 +203,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             Controller.api.bindevent()
             Controller.api.bindConfigs()
             Controller.api.bindTime()
+            Controller.api.bindUses()
         },
         edit: function () {
             Controller.api.bindevent()
@@ -191,6 +211,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             Controller.api.getCountScore()
             Controller.api.renderCountScore()
             Controller.api.bindTime()
+            Controller.api.bindUses()
         },
         api: {
             bindevent: function () {
@@ -510,6 +531,38 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         hour_ctrl.val(parseInt(hour_ctrl.val()) + 1)
                     }
                 })
+            },
+
+            // 绑定可用群体选择事件
+            bindUses() {
+                Controller.api.showUsesControl()
+                $('input[type="radio"][name="row[uses]"]').change(function () {
+                    Controller.api.showUsesControl()
+                })
+            },
+
+            // 根据可用群体显示价格控件
+            showUsesControl() {
+                let uses = $('input[type="radio"][name="row[uses]"]:checked').val()
+                $('.uses').hide()
+                if (uses == 'ALL') {
+                    // 价格置零
+                    $('.uses input').each(function () {
+                        $(this).val(0)
+                    })
+                } else if (uses == 'ONLY_MEMBER') {
+                    $('.uses-member').show()
+                } else if (uses == 'ONLY_PAY') {
+                    $('.uses').show()
+                }
+            },
+
+            // 格式化费用
+            formatPrice(val) {
+                if (val > 0) {
+                    return val + '元'
+                }
+                return '<span class="text-success">免费</span>'
             },
 
             // 绑定固定选题配置按钮事件

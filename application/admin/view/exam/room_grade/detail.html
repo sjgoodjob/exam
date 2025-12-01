@@ -11,8 +11,14 @@
             <span>考试用户信息</span>
         </div>
         <el-descriptions title="" :column="2" border>
-            <el-descriptions-item label="用户名">{{row.user.nickname}}</el-descriptions-item>
-            <el-descriptions-item label="手机号">{{row.user.mobile}}</el-descriptions-item>
+            <el-descriptions-item label="交卷人昵称">{{row.user.nickname}}</el-descriptions-item>
+            <el-descriptions-item label="交卷人手机号">{{row.user.mobile}}</el-descriptions-item>
+
+            <el-descriptions-item label="报名人姓名">{{row.signup1.real_name}}</el-descriptions-item>
+            <el-descriptions-item label="报名人手机号">{{row.signup1.phone}}</el-descriptions-item>
+
+            <el-descriptions-item label="学校">{{row.school.name}}</el-descriptions-item>
+            <el-descriptions-item label="班级">{{row.class_name}}</el-descriptions-item>
         </el-descriptions>
     </el-card>
 

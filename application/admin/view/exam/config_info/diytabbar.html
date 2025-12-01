@@ -1,0 +1,119 @@
+<!--<script src="__CDN__/assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="__CDN__/assets/addons/exam/js/vue.js"></script>
+<link rel="stylesheet" type="text/css" href="__CDN__/assets/addons/exam/css/common.css"></link>-->
+<!--<link rel="stylesheet" type="text/css" href="__CDN__/assets/addons/exam/js/element-ui/index.css"/>
+<script src="__CDN__/assets/addons/exam/js/element-ui/index.js"></script>-->
+
+<div id="app">
+  <form class="form-horizontal" role="form" data-toggle="validator" method="POST" action="" id="setForm">
+    <div>
+      <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">按钮名称:</label>
+        <div class="col-xs-12 col-sm-8">
+          <input id="c-btn_name" data-rule="required" class="form-control" name="row[name]" type="text">
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">按钮图标:</label>
+        <div class="col-xs-12 col-sm-8">
+          <input id="c-btn_icon" data-rule="required" class="form-control" name="row[btn_icon]" type="text">
+          <p class="help-block">* <a href="https://tuniao.ahuaaa.cn/#/basicPage/icon/icon" target="_blank">点击前往图标列表选择</a>，复制到这里</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label col-xs-12 col-sm-2">跳转页面:</label>
+      <div class="col-xs-12 col-sm-8">
+        <select name="row[path]" id="url" class="form-control">
+          <option value="">请选择</option>
+          {volist name="pages" id="vo"}
+          <option value="{$vo.path|htmlentities}">{$vo.name|htmlentities}</option>
+          {/volist}
+          <!--<option v-for="(item, index) in pages" :value="item.path" :key="index">{{item.name}}</option>-->
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group layer-footer">
+      <label class="control-label col-xs-12 col-sm-2"></label>
+      <div class="col-xs-12 col-sm-8">
+        <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+        <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  var faForm = null;
+  var parentFrontendInfo = $('#c-front_info', parent.document).val();
+  var pages = {:json_encode($pages, 256)};
+
+  var app = new Vue({
+    el: '#app',
+    data: {
+      pages: [],
+      currentPage: '',
+      currentItem: null,
+      parentFrontendInfo: null,
+
+    },
+    created() {
+      this.pages = pages
+      this.getForm()
+
+      if (parentFrontendInfo) {
+        this.parentFrontendInfo = JSON.parse(parentFrontendInfo);
+        this.currentPage = this.parentFrontendInfo.url;
+        this.currentItem = this.pages.find(item => item.path === this.currentPage);
+        if (this.currentItem && this.currentItem.params) {
+          this.currentItem.params.forEach(item => {
+            item.value = this.parentFrontendInfo.params[item.field];
+          })
+        }
+        console.log('this.parentFrontendInfo', this.parentFrontendInfo)
+        console.log('this.currentPage', this.currentPage)
+        console.log('this.currentItem', this.currentItem)
+      }
+    },
+    methods: {
+      getForm() {
+        var timer = setInterval(() => {
+          if (faForm) {
+            clearInterval(timer);
+            console.log('faForm3', faForm);
+            this.bindForm();
+          }
+        }, 500);
+      },
+      bindForm() {
+        faForm.api.bindevent($("form[role=form]"), function(data, ret){
+          console.log('bindevent', data, ret);
+          if (ret.code == 1) {
+            Fast.api.close(data);
+          }
+          return false;
+        });
+      },
+      changePage(e) {
+        console.log('changePage', e)
+        this.currentPage = e.target.value;
+        this.currentItem = this.pages.find(item => item.path === this.currentPage);
+
+        setTimeout(() => {
+          if (faForm) {
+            this.bindForm();
+          }
+        }, 500);
+      },
+      // 验证
+      valid() {
+
+      }
+    }
+  });
+</script>

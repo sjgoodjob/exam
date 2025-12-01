@@ -21,7 +21,9 @@ return [
     'Createtime'    => '考试时间',
     'Updatetime'    => '修改时间',
     'User.nickname' => '昵称',
-    'Cate.name'     => '名称',
+    'Cate.name'     => '考场分类',
     'Room.name'     => '考场标题',
-    'Paper.title'   => '试卷名称'
+    'Paper.title'   => '试卷名称',
+    'school_id'     => '所属学校',
+    'class_name'    => '班级',
 ];

@@ -23,7 +23,8 @@ define(['jquery', 'bootstrap', 'backend', 'addtabs', 'table', 'echarts', 'echart
                     trigger: 'axis'
                 },
                 legend: {
-                    data: ['注册用户数']
+                    // '注册用户数',
+                    data: ['付费考试收入', '会员开通收入']
                 },
                 toolbox: {
                     show: false,
@@ -44,20 +45,50 @@ define(['jquery', 'bootstrap', 'backend', 'addtabs', 'table', 'echarts', 'echart
                     right: '10',
                     bottom: 30
                 }],
-                series: [{
-                    name: '注册用户数',
-                    type: 'line',
-                    smooth: true,
-                    areaStyle: {
-                        normal: {}
+                series: [
+                    // {
+                    //     name: '注册用户数',
+                    //     type: 'line',
+                    //     smooth: true,
+                    //     areaStyle: {
+                    //         normal: {}
+                    //     },
+                    //     lineStyle: {
+                    //         normal: {
+                    //             width: 1.5
+                    //         }
+                    //     },
+                    //     data: Config.user_data
+                    // },
+                    {
+                        name: '付费考试收入',
+                        type: 'line',
+                        smooth: true,
+                        areaStyle: {
+                            normal: {}
+                        },
+                        lineStyle: {
+                            normal: {
+                                width: 1.5
+                            }
+                        },
+                        data: Config.paper_income_data
                     },
-                    lineStyle: {
-                        normal: {
-                            width: 1.5
-                        }
-                    },
-                    data: Config.user_data
-                }]
+                    {
+                        name: '会员开通收入',
+                        type: 'line',
+                        smooth: true,
+                        areaStyle: {
+                            normal: {}
+                        },
+                        lineStyle: {
+                            normal: {
+                                width: 1.5
+                            }
+                        },
+                        data: Config.member_income_data
+                    }
+                ]
             };
 
             // 使用刚指定的配置项和数据显示图表。

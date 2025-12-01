@@ -2,6 +2,7 @@
 
 namespace app\admin\controller\exam;
 
+use addons\exam\enum\UserScoreType;
 use addons\exam\library\FrontService;
 use app\common\controller\Backend;
 use think\Db;
@@ -103,6 +104,23 @@ class ConfigInfo extends Backend
             $this->error(__('Parameter %s can not be empty', ''));
         }
 
+        // 积分类型
+        $score_types      = [];
+        $user_score_types = UserScoreType::getKeyDescription();
+
+        // 去除无需奖励的类型
+        unset($user_score_types[UserScoreType::MANUAL], $user_score_types[UserScoreType::EXCHANGE]);
+
+        // 积分奖励配置
+        foreach ($user_score_types as $key => $desc) {
+            $score_types[] = [
+                'val_name'   => 'score_val_' . strtolower($key),
+                'count_name' => 'score_count_' . strtolower($key),
+                'desc'       => $desc
+            ];
+        }
+
+        $this->assign('score_types', $score_types);
         return $this->view->fetch();
     }
 
@@ -121,6 +139,26 @@ class ConfigInfo extends Backend
             $this->success('', '', $params);
         } else {
             $pages = FrontService::PAGES;
+            $this->assign('pages', $pages);
+            return $this->view->fetch();
+        }
+    }
+
+    /**
+     * 自定义小程序底部导航栏
+     */
+    public function diytabbar()
+    {
+        if ($this->request->isPost()) {
+            $params   = $this->request->post("info/a");
+            $full_url = $params['url'] ?? '';
+            if (isset($params['params'])) {
+                $full_url = FrontService::buildUrl($full_url, $params['params']);
+            }
+            $params['full_url'] = $full_url;
+            $this->success('', '', $params);
+        } else {
+            $pages = FrontService::getNoParamsPages();
             $this->assign('pages', $pages);
             return $this->view->fetch();
         }

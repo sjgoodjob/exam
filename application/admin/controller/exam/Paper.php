@@ -35,6 +35,7 @@ class Paper extends Backend
         $this->view->assign("modeList", $this->model->getModeList());
         $this->view->assign("kindList", $this->model->getKindList());
         $this->view->assign("statusList", $this->model->getStatusList());
+        $this->view->assign("usesList", $this->model->getUsesList());
     }
 
 
@@ -63,7 +64,7 @@ class Paper extends Backend
             [$where, $sort, $order, $offset, $limit] = $this->buildparams();
 
             $list = $this->model
-                ->with(['cate'])
+                ->with(['cate', 'subject'])
                 ->where($where)
                 ->order($sort, $order)
                 ->paginate($limit);
@@ -148,7 +149,7 @@ class Paper extends Backend
         if ($this->request->isPost()) {
             $params = $this->request->post("row/a");
             if ($params) {
-                $this->valid($params);
+                $this->valid($params, $row);
                 $params = $this->preExcludeFields($params);
                 $result = false;
                 Db::startTrans();
@@ -245,7 +246,8 @@ class Paper extends Backend
     /**
      * 验证参数
      *
-     * @param $params
+     * @param array $params 参数
+     * @param array $row    原数据
      * @return void
      */
     protected function valid(&$params, $row = null)
@@ -291,6 +293,15 @@ class Paper extends Backend
         }
         $params['limit_time'] = $limit_time;
 
+        if ($params['is_prevent_switch_screen']) {
+            if (empty($params['switch_screen_count']) || $params['switch_screen_count'] < 1) {
+                $this->error('切屏次数不能小于1');
+            }
+            if (empty($params['switch_screen_second']) || $params['switch_screen_second'] < 1) {
+                $this->error('切屏认定秒数不能小于1');
+            }
+        }
+
         // 编辑时
         if ($row) {
             $grade_count      = $this->model::getGradeCount($row['id']);
@@ -327,7 +338,7 @@ class Paper extends Backend
      * @param $params
      * @return void
      */
-    public function saveFixQuestion($paper, $params, $method = 'add')
+    protected function saveFixQuestion($paper, $params, $method = 'add')
     {
         if ($paper['mode'] != 'FIX') {
             return;
@@ -340,6 +351,19 @@ class Paper extends Backend
         $questions = $params['questions'];
         $data      = [];
         foreach ($questions as $key => $question) {
+            // $item = [
+            //     'paper_id'    => $paper['id'],
+            //     'question_id' => $question['id'],
+            //     'score'       => $question['score'],
+            //     'sort'        => $key + 1,
+            //     'createtime'  => time(),
+            // ];
+            //
+            // if ($question['kind'] == 'SHORT') {
+            //     $item['answer'] = $question['answer'];
+            // }
+
+            // $data[] = $item;
             $data[] = [
                 'paper_id'      => $paper['id'],
                 'question_id'   => $question['id'],

@@ -11,6 +11,7 @@ use app\common\controller\Backend;
  */
 class ManualRoomGrade extends Backend
 {
+    protected $noNeedRight = '*';
 
     /**
      * ManualRoomGradeModel模型对象

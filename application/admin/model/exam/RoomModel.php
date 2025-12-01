@@ -9,7 +9,7 @@ use traits\model\SoftDelete;
 class RoomModel extends BaseModel
 {
     use SoftDelete;
-    
+
     // 表名
     protected $name = 'exam_room';
 
@@ -27,15 +27,27 @@ class RoomModel extends BaseModel
         'end_time_text',
         'status_text',
         'signup_mode_text',
-        'is_makeup_text'
+        'is_makeup_text',
     ];
 
+    /** 二维码保存目录 */
+    const SAVE_DIR_PATH = 'uploads/qrcode';
 
     protected static function init()
     {
         self::afterInsert(function ($row) {
             $pk = $row->getPk();
             $row->getQuery()->where($pk, $row[$pk])->update(['weigh' => $row[$pk]]);
+        });
+
+        // 同步保存分类的科目到考场
+        self::afterWrite(function ($row) {
+            if (!empty($row['cate_id'])) {
+                $cate = CateModel::get($row['cate_id']);
+                if ($cate && !empty($cate['subject_id'])) {
+                    self::where('cate_id', $row['cate_id'])->update(['subject_id' => $cate['subject_id']]);
+                }
+            }
         });
     }
 
@@ -53,6 +65,11 @@ class RoomModel extends BaseModel
     public function getIsMakeupList()
     {
         return ['0' => __('Is_makeup 0'), '1' => __('Is_makeup 1')];
+    }
+
+    public function getIsCreateQrcodeH5List()
+    {
+        return ['0' => '否', '1' => '是'];
     }
 
 
@@ -119,5 +136,56 @@ class RoomModel extends BaseModel
         return $this->belongsTo(CateModel::class, 'cate_id', 'id');
     }
 
+    public function subject()
+    {
+        return $this->belongsTo(SubjectModel::class, 'subject_id', 'id', [], 'LEFT')->setEagerlyType(0);
+    }
 
+    /*
+     * 生成考场H5二维码图片
+     */
+    public static function createQrcodeImg($url, $id, $type = '')
+    {
+        $dir       = self::SAVE_DIR_PATH;
+        $url_path  = '/' . $dir . '/' . "room_qrcode_{$type}_{$id}.png";
+        $file_path = ROOT_PATH . DS . 'public' . DS . $url_path;
+
+        // dd($file);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777);
+        }
+        if (is_file($file_path)) {
+            @unlink($file_path);
+        }
+
+        // 2.0.0之前的qrcode版本
+        // $qrcode = new \Endroid\QrCode\QrCode($url);
+        // $qrcode->setSize(300);
+        // $qrcode->setMargin(2);
+        // $qrcode->writeFile($file_path);
+
+        // 2.0.0之后的qrcode版本
+        $qrcode = \Endroid\QrCode\QrCode::create($url)
+            ->setSize(300)
+            ->setMargin(2);
+        $writer = new \Endroid\QrCode\Writer\PngWriter();
+        $result = $writer->write($qrcode);
+        $result->saveToFile($file_path);
+
+        return $url_path;
+    }
+
+    /**
+     * 生成H5二维码
+     *
+     * @param $room_id
+     * @return string
+     */
+    public static function createH5Qrcode($room_id)
+    {
+        $h5_url = ConfigInfoModel::getH5Url();
+        $url    = $h5_url . 'pages/room/detail?id=' . $room_id;
+        return RoomModel::createQrcodeImg($url, $room_id, 'h5');
+
+    }
 }

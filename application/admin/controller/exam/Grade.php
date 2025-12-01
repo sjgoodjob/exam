@@ -4,7 +4,9 @@ namespace app\admin\controller\exam;
 
 use addons\exam\enum\PaperMode;
 use addons\exam\model\QuestionModel;
+use app\admin\model\exam\UserInfoModel;
 use app\common\controller\Backend;
+use think\Env;
 
 /**
  * 考试成绩
@@ -60,14 +62,27 @@ class Grade extends Backend
                 ->where($where)
                 ->order($sort, $order)
                 ->paginate($limit);
-
+            
             foreach ($list as $row) {
 
                 $row->getRelation('cate')->visible(['name']);
                 $row->getRelation('paper')->visible(['title']);
             }
 
-            $result = ["total" => $list->total(), "rows" => $list->items()];
+            // $result = array("total" => $list->total(), "rows" => $list->items());
+
+            $total = $list->total();
+            $rows  = $list->items();
+
+            if (Env::get('app.preview', true)) {
+                foreach ($rows as &$row) {
+                    if (!empty($row['user']['mobile'])) {
+                        $row['user']['mobile'] = UserInfoModel::hideUserMobile($row['user']['mobile']);
+                    }
+                }
+            }
+
+            $result = ["total" => $total, "rows" => $rows];
 
             return json($result);
         }
@@ -136,6 +151,12 @@ class Grade extends Backend
 
         // 及格线
         $row['pass_score'] = $row['pass_score'] ?: $row['paper']['pass_score'];
+
+        if (Env::get('app.preview', false)) {
+            if (!empty($row['user']['mobile'])) {
+                $row['user']['mobile'] = UserInfoModel::hideUserMobile($row['user']['mobile']);
+            }
+        }
 
         return $row;
     }

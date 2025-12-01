@@ -13,6 +13,8 @@
                 <input id="c-cate_id" data-rule="required" data-source="exam/cate/selectpage"
                        data-params='{"custom[kind]":"PAPER","isTree":true}' class="form-control selectpage" name="row[cate_id]"
                        type="text" value="">
+
+                <p class="text-info">* 此处选择的题库分类，并不涉及试题抽取，仅用于区分试卷所属题库及付费使用区分</p>
             </div>
         </div>
 
@@ -143,6 +145,92 @@
                 <p class="text-info">* 试卷结束使用时间，清空则不限制试卷使用时间</p>
             </div>
         </div>-->
+
+      <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('uses')}:</label>
+        <div class="col-xs-12 col-sm-8">
+
+          <div class="radio">
+            {foreach name="usesList" item="vo"}
+            <label for="row[uses]-{$key|htmlentities}">
+              <input id="row[uses]-{$key|htmlentities}" name="row[uses]" type="radio" value="{$key|htmlentities}" {in name="key" value="ALL" }checked{/in} />
+              {$vo|htmlentities}</label>
+            {/foreach}
+          </div>
+
+        </div>
+      </div>
+
+      <div class="form-group uses">
+        <label class="control-label col-xs-12 col-sm-2">{:__('price')}:</label>
+        <div class="col-xs-12 col-sm-8">
+          <input id="c-price" data-rule="required" class="form-control" name="row[price]" type="number" step="0.01" min="0" value="0" placeholder="请输入普通用户价格">
+        </div>
+      </div>
+
+      <div class="form-group uses uses-member">
+        <label class="control-label col-xs-12 col-sm-2">{:__('member_price')}:</label>
+        <div class="col-xs-12 col-sm-8">
+          <input id="c-member_price" data-rule="required" class="form-control" name="row[member_price]" type="number" step="0.01" min="0" value="0" placeholder="请输入会员用户价格">
+        </div>
+      </div>
+
+      <div class="form-group uses uses-member">
+        <label class="control-label col-xs-12 col-sm-2">{:__('pay_effect_days')}:</label>
+        <div class="col-xs-12 col-sm-8" style="line-height: 31px;">
+          <input id="c-pay_effect_days" class="form-control" name="row[pay_effect_days]" type="number"
+                 step="1" min="0" value="0" style="width: 200px" placeholder="支付后可用天数，为0不限制">
+          <p class="text-info">* 用户支付后，在有效期内可一直使用，为0不限制天数</p>
+        </div>
+      </div>
+
+      <div class="form-group uses uses-member">
+        <label class="control-label col-xs-12 col-sm-2"> </label>
+        <div class="col-xs-12 col-sm-8">
+          <p class="text-info">* 若题库设置了收费，题库付费或激活后，仍然需要付费才能使用该试卷（建议开启题库收费后，不再设置试卷费用）</p>
+        </div>
+      </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('is_prevent_switch_screen')}:</label>
+            <div class="col-xs-12 col-sm-8">
+
+                <div class="radio">
+                    <label for="row[is_prevent_switch_screen]-0"><input id="row[is_prevent_switch_screen]-0" name="row[is_prevent_switch_screen]" type="radio" value="0" checked /> 不开启</label>
+                    <label for="row[is_prevent_switch_screen]-1"><input id="row[is_prevent_switch_screen]-1" name="row[is_prevent_switch_screen]" type="radio" value="1" /> 开启</label>
+                </div>
+                <p class="text-info">* 开启后，用户在考试时切换屏幕，超过设置的次数、时间，将自动交卷</p>
+            </div>
+        </div>
+        <div class="form-group" data-favisible="is_prevent_switch_screen=1">
+            <label class="control-label col-xs-12 col-sm-2">{:__('switch_screen_count')}:</label>
+            <div class="col-xs-12 col-sm-8" style="line-height: 31px;">
+                <input id="c-switch_screen_count" class="form-control" name="row[switch_screen_count]" type="number"
+                       step="1" min="0" value="0" style="width: 200px" placeholder="允许切屏次数">次
+            </div>
+        </div>
+        <div class="form-group" data-favisible="is_prevent_switch_screen=1">
+            <label class="control-label col-xs-12 col-sm-2">{:__('switch_screen_second')}:</label>
+            <div class="col-xs-12 col-sm-8" style="line-height: 31px;">
+                <input id="c-switch_screen_second" class="form-control" name="row[switch_screen_second]" type="number"
+                       step="1" min="0" value="0" style="width: 200px" placeholder="切屏认定秒数">秒
+            </div>
+        </div>
+
+        <div class="form-group">
+          <label class="control-label col-xs-12 col-sm-2">{:__('Cover_image')}:</label>
+          <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+              <input id="c-cover_image" data-rule="required" class="form-control" size="50" name="row[cover_image]" type="text" value="">
+              <div class="input-group-addon no-border no-padding">
+                <span><button type="button" id="faupload-cover_image" class="btn btn-danger faupload" data-input-id="c-cover_image" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/webp" data-multiple="false" data-preview-id="p-cover_image"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                <span><button type="button" id="fachoose-cover_image" class="btn btn-primary fachoose" data-input-id="c-cover_image" data-mimetype="image/*" data-multiple="false"><i class="fa fa-list"></i> {:__('Choose')}</button></span>
+              </div>
+              <span class="msg-box n-right" for="c-cover_image"></span>
+            </div>
+            <ul class="row list-inline faupload-preview" id="p-cover_image"></ul>
+          </div>
+        </div>
 
         <div class="form-group">
             <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>

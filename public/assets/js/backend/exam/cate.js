@@ -34,19 +34,39 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id'), operate: false},
+                        {field: 'subject.name', title: __('subject_id'), operate: false},
                         {
                             field: 'name', title: __('Name'), operate: false, align: 'left', formatter:function (value, row, index) {
                                 return value.toString().replace(/(&|&amp;)nbsp;/g, '&nbsp;');
-                            }},
+                            }
+                        },
                         {
                             field: 'kind',
                             title: __('Kind'),
-                            searchList: {"QUESTION": __('Question'), "PAPER": __('Paper'), "ROOM": __('Room')},
+                            searchList: {"QUESTION": __('Question'), "ROOM": __('Room')},// , "PAPER": __('Paper'), "COURSE": __('Course')
                             formatter: Table.api.formatter.normal
                         },
+                        {
+                            field: 'uses',
+                            title: __('uses'),
+                            searchList: {"ONLY_MEMBER": __('ONLY_MEMBER'),"ALL": __('ALL'),},
+                            formatter: Table.api.formatter.label,
+                            // formatter: function (value, row, index) {
+                            //     if (row.kind == 'QUESTION') {
+                            //         return Table.api.formatter.label(value, row, index);
+                            //     }
+                            //     return '-';
+                            // }
+                        },
+                        // {
+                        //     field: 'is_free',
+                        //     title: __('is_free'),
+                        //     searchList: {"0": __('is_free 0'),"1": __('is_free 1'),},
+                        //     formatter: Table.api.formatter.normal
+                        // },
                         // {field: 'icon', title: __('Icon'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
                         // {field: 'parent_id', title: __('Parent_id'), operate: 'LIKE'},
-                        {field: 'sort', title: __('Sort')},
+                        // {field: 'sort', title: __('Sort')},
                         {
                             field: 'operate',
                             title: __('Operate'),
@@ -185,6 +205,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                     // 刷新select项
                     $("#c-parent_id").data("selectpicker") && $("#c-parent_id").selectpicker("refresh");
+
+                    // 可用群体
+                    var kind = $(this).val();
+                    if (kind === 'QUESTION' || kind === 'PAPER') {
+                        $(".uses").removeClass("hide");
+                    } else {
+                        $(".uses").addClass("hide");
+                    }
                 });
 
                 Form.api.bindevent($("form[role=form]"));
