@@ -1,5 +1,8 @@
 <template>
+	
 	<view>
+		<watermark text="JASIC CLOUD · Internal Use Only" />
+
 		<view class="card-view">
 			<image :src="bannerImage" mode="aspectFill" style="width: 100%; height: 200rpx;"></image>
 		</view>
@@ -44,6 +47,8 @@
 
 <script>
 	import cateApi from "@/common/api/cate.js"
+	import Watermark from "@/components/watermark/watermark.vue";
+
 	export default {
 		data() {
 			return {
@@ -265,7 +270,11 @@
 				console.log('get emit closeDialog')
 				this.showCateConfirm = false
 			}
+		},
+		components: {
+			Watermark,
 		}
+
 	}
 </script>
 

@@ -3,6 +3,9 @@
 		"^tn-(.*)": "@/tuniao-ui/components/tn-$1/tn-$1.vue",
 		"^sign-(.*)": "@/pagesSignUp/components/$1.vue"
 	},
+	"mp-weixin": {
+	    "lazyCodeLoading": "requiredComponents" // 按需加载配置
+	},
 	"pages": [
 
 		//pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages

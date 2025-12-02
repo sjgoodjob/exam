@@ -1,12 +1,12 @@
 <template>
   <view>
-    <!-- 水印层（浮层，永远不阻挡点击） -->
+    <!-- 水印层（浮层，不阻挡点击） -->
     <view class="wm-root" :style="bgStyle"></view>
 
-    <!-- 页面内容层（保持事件） -->
+    <!-- 页面内容层 -->
     <slot></slot>
 
-    <!-- 隐藏的 canvas -->
+    <!-- 透明但可渲染的 canvas -->
     <canvas canvas-id="wmCanvas" class="wm-canvas"></canvas>
   </view>
 </template>
@@ -18,19 +18,22 @@ export default {
   },
 
   data() {
-    return { watermarkImg: "" }
+    return { watermarkImg: "" };
   },
 
   computed: {
     bgStyle() {
       return this.watermarkImg
-        ? `background-image:url(${this.watermarkImg});`
+        ? `background-image:url(${this.watermarkImg});background-size:200px 200px;background-repeat:repeat;`
         : "";
     }
   },
 
   mounted() {
-    this.draw();
+    // 确保真机渲染完成
+    this.$nextTick(() => {
+      setTimeout(() => this.draw(), 50);
+    });
   },
 
   methods: {
@@ -39,27 +42,41 @@ export default {
       const w = 200, h = 200;
 
       ctx.setFillStyle("rgba(255,255,255,0)");
-      ctx.fillRect(0,0,w,h);
+      ctx.fillRect(0, 0, w, h);
 
       ctx.setFontSize(14);
       ctx.setFillStyle("rgba(0,0,0,0.06)");
-      ctx.translate(100,100);
+      ctx.translate(100, 100);
       ctx.rotate(-30 * Math.PI / 180);
       ctx.fillText(this.text, -60, 0);
 
       ctx.draw(false, () => {
-        uni.canvasToTempFilePath({
-          canvasId: "wmCanvas",
-          success: res => this.watermarkImg = res.tempFilePath
-        }, this);
+        // ★ 延迟确保真机 draw 完成
+        setTimeout(() => {
+         uni.canvasToTempFilePath({
+           canvasId: "wmCanvas",
+           fileType: 'png',
+           quality: 1,
+           success: res => {
+             // 再次读取为 base64
+             uni.getFileSystemManager().readFile({
+               filePath: res.tempFilePath,
+               encoding: 'base64',
+               success: r => {
+                 this.watermarkImg = 'data:image/png;base64,' + r.data
+               }
+             });
+           }
+         }, this);
+
+        }, 120);
       });
     }
   }
-}
+};
 </script>
 
 <style scoped>
-/* 浮动水印层（最顶层 + 不影响点击） */
 .wm-root {
   position: fixed;
   left: 0;
@@ -67,17 +84,17 @@ export default {
   width: 100vw;
   height: 100vh;
 
-  pointer-events: none;  /* ★ 不阻挡点击 */
-  background-size: 200px 200px;
-  background-repeat: repeat;
-
+  pointer-events: none;
   z-index: 999999;
 }
 
-/* 隐藏 canvas */
+/* ★ 不能移出屏幕，只能透明（真机必须可渲染） */
 .wm-canvas {
+  width: 200px;
+  height: 200px;
   position: absolute;
-  left: -9999px;
-  top: -9999px;
+  left: 0;
+  top: 0;
+  opacity: 0; /* 真机能渲染 */
 }
 </style>

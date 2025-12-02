@@ -1,5 +1,8 @@
 <template>
+
   <view>
+    <watermark text="JASIC CLOUD · Internal Use Only"></watermark>
+
     <!-- 骨架屏 -->
     <kz-skeleton
       v-if="showSkeleton"
@@ -113,12 +116,14 @@
 // import HeadLine from '@/components/headline/headline.vue'
 import AddTip from "@/components/struggler-uniapp-add-tip/struggler-uniapp-add-tip.vue";
 import subjectApi from "@/common/api/subject.js";
+import Watermark from "@/components/watermark/watermark.vue";
 
 var interstitialAd = null;
 
 export default {
   components: {
     // HeadLine,
+	Watermark,
     AddTip,
   },
   data() {

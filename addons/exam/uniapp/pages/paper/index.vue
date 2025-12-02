@@ -1,5 +1,7 @@
 <template>
 	<view>
+		<watermark text="JASIC CLOUD · Internal Use Only" />
+
 		<HMfilterDropdown :filterData="filterData" :defaultSelected="filterDropdownValue" @confirm="confirmCate"></HMfilterDropdown>
 
 		<view class="paper-contains">
@@ -106,11 +108,13 @@
 <script>
 import HMfilterDropdown from '@/components/HM-filterDropdown/HM-filterDropdown.vue';
 import TuiCard from '@/components/tui-card/tui-card.vue';
+import Watermark from "@/components/watermark/watermark.vue";
 
 export default {
 	components: {
 		HMfilterDropdown: HMfilterDropdown,
-		'tui-card': TuiCard
+		'tui-card': TuiCard,
+		Watermark,
 	},
 	data() {
 		return {
